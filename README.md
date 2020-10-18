@@ -15,7 +15,7 @@ Right now, this package only supports video search.
 # Example
 
 ```js
-const YouTube = require("../index");
+const YouTube = require("youtube-sr");
 
 YouTube.search("indila last dance", { limit: 1 })
     .then(x => console.log(x[0]))
