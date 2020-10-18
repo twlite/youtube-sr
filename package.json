@@ -1,0 +1,31 @@
+{
+  "name": "youtube-sr",
+  "version": "1.0.1",
+  "description": "Simple youtube search",
+  "main": "index.js",
+  "scripts": {
+    "test": "cd test && node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevSnowflake/youtube-sr.git"
+  },
+  "keywords": [
+    "youtube",
+    "api",
+    "search",
+    "playlist",
+    "channel",
+    "video",
+    "scrape"
+  ],
+  "author": "Snowflake107",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/DevSnowflake/youtube-sr/issues"
+  },
+  "homepage": "https://github.com/DevSnowflake/youtube-sr#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
