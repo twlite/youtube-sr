@@ -15,9 +15,29 @@ class YouTube {
      * @param {RequestInit} [options.requestOptions] Request options
      */
     static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
-        const url = `https://youtube.com/results?q=${query.split(" ").join("+")}`;
+        if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
+        const url = `https://youtube.com/results?q=${query.trim().split(" ").join("+")}`;
         const html = await Util.getHTML(url);
         return Util.parseSearchResult(html, options);
+    }
+
+    /**
+     * Search one
+     * @param {string} query Search query
+     * @param {"video"|"all"} type Search type
+     * @param {RequestInit} requestOptions Request options
+     */
+    static searchOne(query, type = "all", requestOptions = {}) {
+        return new Promise((resolve) => {
+            YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions })
+                .then(res => {
+                    if (!res || !res.length) return resolve(null);
+                    resolve(res[0]);
+                })
+                .catch(e => {
+                    resolve(null);
+                });
+        });
     }
 
     /**
