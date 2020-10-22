@@ -17,6 +17,7 @@ class Channel {
         this.id = data.id || null;
         this.url = data.url || null;
         this.icon = data.icon || { url: null, width: 0, height: 0 };
+        this.subscribers = data.subscribers || null;
     }
 
     /**
@@ -46,7 +47,8 @@ class Channel {
             id: this.id,
             url: this.url,
             iconURL: this.iconURL(),
-            type: "channel"
+            type: this.type,
+            subscribers: this.subscribers
         };
     }
 

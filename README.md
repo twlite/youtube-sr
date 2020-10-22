@@ -1,55 +1,92 @@
 # YouTube Search
-Simple package to search data on YouTube.
+Simple package to search videos or channels on YouTube.
 
 # Note
-Right now, this package supports video search only.
-
-# Todo
-- add more search type
-- return better response
-- typings
-- tests
-- better examples
-- others
+Right now, this package supports video and channel search only.
 
 # Example
 
 ```js
 const YouTube = require("youtube-sr");
 
-YouTube.search("indila last dance", { limit: 1 })
-    .then(x => console.log(x[0]))
+YouTube.search("indila last dance", { limit: 3 })
+    .then(x => console.log(x))
     .catch(console.error);
 ```
 
 ## Response
 
+> **Note:** `subscribers` count may be `null` for the channel objects received from `video`.
+
 ```js
-Video {
-  id: 'K5KAc5CoCuk',
-  title: 'Indila - Dernière Danse (Clip Officiel)',
-  description: '1er Album « Mini World » sur iTunes http://po.st/MiniWorld Facebook : https://www.facebook.com/IndilaOfficiel Twitter ...',
-  durationFormatted: '3:35',
-  uploadedAt: '6 years ago',
-  views: '672002671',
-  thumbnail: Thumbnail {
-    id: 'K5KAc5CoCuk',
-    width: 720,
-    height: 404,
-    url: 'https://i.ytimg.com/vi/K5KAc5CoCuk/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLBBognlttPrCx9VCmx6P_nSW2LREw'
-  },
-  channel: Channel {
-    name: 'Indila',
-    verified: true,
-    id: 'UCX4EBb-NmxyntI0mQAErHvQ',
-    url: 'https://www.youtube.com/channel/UCX4EBb-NmxyntI0mQAErHvQ',
-    icon: {
-      url: 'https://yt3.ggpht.com/a-/AOh14Gi6koQ6T4zRygJAQ2yLHRvj7j7HqRIQKIzGTA=s68-c-k-c0x00ffffff-no-rj-mo',
-      width: 68,
-      height: 68
+[
+    Video {
+        id: 'K5KAc5CoCuk',
+        title: 'Indila - Dernière Danse (Clip Officiel)',
+        description: '1er Album « Mini World » sur iTunes http://po.st/MiniWorld Facebook : https://www.facebook.com/IndilaOfficiel Twitter ...',
+        durationFormatted: '3:35',
+        uploadedAt: '6 years ago',
+        views: '673022078',
+        thumbnail: Thumbnail {
+            id: 'K5KAc5CoCuk',
+            width: 720,
+            height: 404,
+            url: 'https://i.ytimg.com/vi/K5KAc5CoCuk/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLBBognlttPrCx9VCmx6P_nSW2LREw'
+        },
+        channel: Channel {
+            name: 'Indila',
+            verified: true,
+            id: 'UCX4EBb-NmxyntI0mQAErHvQ',
+            url: 'https://www.youtube.com/channel/UCX4EBb-NmxyntI0mQAErHvQ',
+            icon: [Object],
+            subscribers: null
+        }
+    },
+    Video {
+        id: 'ZthUo-Z97uw',
+        title: 'Indila - Parle à ta tête (Clip Officiel)',
+        description: 'Indila',
+        durationFormatted: '5:58',
+        uploadedAt: '11 months ago',
+        views: '26742156',
+        thumbnail: Thumbnail {
+            id: 'ZthUo-Z97uw',
+            width: 720,
+            height: 404,
+            url: 'https://i.ytimg.com/vi/ZthUo-Z97uw/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLBzYV0IZaeEQ84LWF6pRIna96zBKQ'
+        },
+        channel: Channel {
+            name: 'Indila',
+            verified: true,
+            id: 'UCX4EBb-NmxyntI0mQAErHvQ',
+            url: 'https://www.youtube.com/channel/UCX4EBb-NmxyntI0mQAErHvQ',
+            icon: [Object],
+            subscribers: null
+        }
+    },
+    Video {
+            id: 'vtNJMAyeP0s',
+            title: 'Indila - Tourner Dans Le Vide',
+            description: 'Indila',
+            durationFormatted: '4:11',
+            uploadedAt: '6 years ago',
+            views: '185781927',
+            thumbnail: Thumbnail {
+                id: 'vtNJMAyeP0s',
+                width: 720,
+                height: 404,
+                url: 'https://i.ytimg.com/vi/vtNJMAyeP0s/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLC9vHC4a3KiT0Jw6n5RQ5AzzHjWnA'
+            },
+            channel: Channel {
+                name: 'Indila',
+                verified: true,
+                id: 'UCX4EBb-NmxyntI0mQAErHvQ',
+                url: 'https://www.youtube.com/channel/UCX4EBb-NmxyntI0mQAErHvQ',
+                icon: [Object],
+                subscribers: null
+            }
     }
-  }
-}
+]
 ```
 
 # Join my discord server

@@ -1,5 +1,5 @@
 const YouTube = require("../index");
 
-YouTube.search("indila last dance", { limit: 1 })
-    .then(x => console.log(x[0]))
+YouTube.search("indila", { type: "all", limit: 3 })
+    .then(x => console.log(x))
     .catch(console.error);

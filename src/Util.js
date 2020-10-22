@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const Channel = require("./Structures/Channel");
 const Video = require("./Structures/Video");
 
 class Util {
@@ -85,47 +86,83 @@ class Util {
             let res;
             if (options.type === "all") {
                 if (!!data.videoRenderer) options.type = "video";
+                else if (!!data.channelRenderer) options.type = "channel";
                 else continue;
             }
 
             if (options.type === "video") {
-                if (data.videoRenderer) {
-                    const badge = data.videoRenderer.ownerBadges && data.videoRenderer.ownerBadges[0];
-                    res = new Video({
-                        id: data.videoRenderer.videoId,
-                        url: `https://www.youtube.com/watch?v=${data.videoRenderer.videoId}`,
-                        title: data.videoRenderer.title.runs[0].text,
-                        description: data.videoRenderer.descriptionSnippet && data.videoRenderer.descriptionSnippet.runs[0] ? data.videoRenderer.descriptionSnippet.runs[0].text : "",
-                        duration: data.videoRenderer.lengthText ? Util.parseDuration(data.videoRenderer.lengthText.simpleText) : 0,
-                        duration_raw: data.videoRenderer.lengthText ? data.videoRenderer.lengthText.simpleText : null,
-                        thumbnail: {
-                            id: data.videoRenderer.videoId,
-                            url: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].url,
-                            height: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].height,
-                            width: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].width
-                        },
-                        channel: {
-                            id: data.videoRenderer.ownerText.runs[0].navigationEndpoint.browseEndpoint.browseId || null,
-                            name: data.videoRenderer.ownerText.runs[0].text || null,
-                            url: `https://www.youtube.com${data.videoRenderer.ownerText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl || data.videoRenderer.ownerText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-                            icon: {
-                                url: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].url,
-                                width: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].width,
-                                height: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].height
-                            },
-                            verified: badge && badge.metadataBadgeRenderer && badge.metadataBadgeRenderer.style && badge.metadataBadgeRenderer.style.toLowerCase().includes("verified")
-                        },
-                        uploadedAt: data.videoRenderer.publishedTimeText ? data.videoRenderer.publishedTimeText.simpleText : null,
-                        views: data.videoRenderer.viewCountText && data.videoRenderer.viewCountText.simpleText ? data.videoRenderer.viewCountText.simpleText.replace(/[^0-9]/g, "") : 0,
-                        type: "video"
-                    });
-                } else continue;
+                const parsed = Util.parseVideo(data);
+                if (!parsed) continue;
+                res = parsed;
+            } else if (options.type === "channel") {
+                const parsed = Util.parseChannel(data);
+                if (!parsed) continue;
+                res = parsed;
             }
 
             results.push(res);
         }
 
         return results;
+    }
+
+    /**
+     * Parse channel from raw data
+     * @param {object} data Raw data to parse video from
+     */
+    static parseChannel(data = {}) {
+        if (!data || !data.channelRenderer) return;
+        const badge = data.channelRenderer.ownerBadges && data.channelRenderer.ownerBadges[0];
+        let url = `https://www.youtube.com${data.channelRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl || data.channelRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url}`;
+        let res = new Channel({
+            id: data.channelRenderer.channelId,
+            name: data.channelRenderer.title.simpleText,
+            icon: data.channelRenderer.thumbnail.thumbnails[data.channelRenderer.thumbnail.thumbnails.length - 1],
+            url: url,
+            verified: badge && badge.metadataBadgeRenderer && badge.metadataBadgeRenderer.style && badge.metadataBadgeRenderer.style.toLowerCase().includes("verified"),
+            subscribers: data.channelRenderer.subscriberCountText.simpleText
+        });
+
+        return res;
+    }
+
+    /**
+     * Parse video from raw data
+     * @param {object} data Raw data to parse video from
+     */
+    static parseVideo(data = {}) {
+        if (!data || !data.videoRenderer) return;
+
+        const badge = data.videoRenderer.ownerBadges && data.videoRenderer.ownerBadges[0];
+        let res = new Video({
+            id: data.videoRenderer.videoId,
+            url: `https://www.youtube.com/watch?v=${data.videoRenderer.videoId}`,
+            title: data.videoRenderer.title.runs[0].text,
+            description: data.videoRenderer.descriptionSnippet && data.videoRenderer.descriptionSnippet.runs[0] ? data.videoRenderer.descriptionSnippet.runs[0].text : "",
+            duration: data.videoRenderer.lengthText ? Util.parseDuration(data.videoRenderer.lengthText.simpleText) : 0,
+            duration_raw: data.videoRenderer.lengthText ? data.videoRenderer.lengthText.simpleText : null,
+            thumbnail: {
+                id: data.videoRenderer.videoId,
+                url: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].url,
+                height: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].height,
+                width: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].width
+            },
+            channel: {
+                id: data.videoRenderer.ownerText.runs[0].navigationEndpoint.browseEndpoint.browseId || null,
+                name: data.videoRenderer.ownerText.runs[0].text || null,
+                url: `https://www.youtube.com${data.videoRenderer.ownerText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl || data.videoRenderer.ownerText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
+                icon: {
+                    url: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].url,
+                    width: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].width,
+                    height: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].height
+                },
+                verified: badge && badge.metadataBadgeRenderer && badge.metadataBadgeRenderer.style && badge.metadataBadgeRenderer.style.toLowerCase().includes("verified")
+            },
+            uploadedAt: data.videoRenderer.publishedTimeText ? data.videoRenderer.publishedTimeText.simpleText : null,
+            views: data.videoRenderer.viewCountText && data.videoRenderer.viewCountText.simpleText ? data.videoRenderer.viewCountText.simpleText.replace(/[^0-9]/g, "") : 0
+        });
+
+        return res;
     }
 
 }

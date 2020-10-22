@@ -68,6 +68,7 @@ class Video {
     toJSON() {
         return {
             id: this.id,
+            url: this.url,
             title: this.title,
             description: this.description,
             duration: this.duration,

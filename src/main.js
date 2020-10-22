@@ -11,7 +11,7 @@ class YouTube {
      * @param {string} query Search youtube
      * @param {object} options Search options
      * @param {number} [options.limit=20] Limit
-     * @param {"video"|"all"} [options.type="video"] Type
+     * @param {"video"|"channel"|"all"} [options.type="video"] Type
      * @param {RequestInit} [options.requestOptions] Request options
      */
     static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
@@ -24,7 +24,7 @@ class YouTube {
     /**
      * Search one
      * @param {string} query Search query
-     * @param {"video"|"all"} type Search type
+     * @param {"video"|"channel"|"all"} type Search type
      * @param {RequestInit} requestOptions Request options
      */
     static searchOne(query, type = "all", requestOptions = {}) {
