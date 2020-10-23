@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const fetch = require("node-fetch").default;
 const Channel = require("./Structures/Channel");
 const Video = require("./Structures/Video");
 
