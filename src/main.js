@@ -16,7 +16,7 @@ class YouTube {
      */
     static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
-        const url = `https://youtube.com/results?q=${query.trim().split(" ").join("+")}`;
+        const url = `https://youtube.com/results?q=${encodeURI(query.trim())}`;
         const html = await Util.getHTML(url);
         return Util.parseSearchResult(html, options);
     }
