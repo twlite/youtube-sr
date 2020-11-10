@@ -1,9 +1,6 @@
 # YouTube Search
 Simple package to search videos or channels on YouTube.
 
-# Note
-Right now, this package supports video and channel search only.
-
 # Example
 
 ```js
@@ -14,9 +11,14 @@ YouTube.search("indila last dance", { limit: 3 })
     .catch(console.error);
 ```
 
-## Response
+# API
+## search(query, options?)
+## searchOne(query, options?)
+## getPlaylist(query, options?)
 
-> **Note:** `subscribers` count may be `null` for the channel objects received from `video`.
+## Response Example
+
+> **Note:** `subscribers` count may be `null` for the channel objects received from `video` or `playlist`.
 
 ```js
 [

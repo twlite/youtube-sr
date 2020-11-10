@@ -1,5 +1,5 @@
 declare module "youtube-sr" {
-    export type SearchType = "video" | "channel" | "all";
+    export type SearchType = "video" | "channel" | "playlist" | "all";
 
     export interface SearchOptions {
         limit?: number;
@@ -32,12 +32,25 @@ declare module "youtube-sr" {
         subscribers: string | null;
     }
 
+    export interface PlaylistAuthor {
+        name: string;
+        id: string;
+        url: string;
+        icon: string;
+    }
+
     export type ThumbnailType = "default" | "hqdefault" | "mqdefault" | "sddefault" | "maxresdefault" | "ultrares";
 
     export default class YouTube {
-        public static search(query: string, options?: SearchOptions): Promise<(Video|Channel)[]>;
-        public static searchOne(query: string, options?: SearchOptionsOne): Promise<Video|Channel>;
+        public static search(query: string, options?: SearchOptions): Promise<(Video|Channel|Playlist)[]>;
+        public static searchOne(query: string, options?: SearchOptionsOne): Promise<Video|Channel|Playlist>;
+        public static getPlaylist(url: string, options?: PlaylistFetchOptions): Promise<Playlist>;
         public static get version(): string;
+    }
+
+    export interface PlaylistFetchOptions {
+        limit?: number;
+        requestOptions?: RequestInit;
     }
 
     export interface ThumbnailInterfaceJSON {
@@ -129,5 +142,22 @@ declare module "youtube-sr" {
         public static parseSearchResult(html: string, options?: UtilParseOptions): (Video | Channel)[];
         public static parseChannel(data: object): Channel;
         public static parseVideo(data: object): Video;
+        public static parsePlaylist(data: object): Playlist;
+        public static getPlaylist(html: string, limit: number): Playlist;
+        public static getPlaylistURL(url: string): string | null;
+        public static validatePlaylist(url: string): void;
+    }
+
+    export class Playlist {
+        id: string | null;
+        title: string | null;
+        videoCount: number;
+        lastUpdate:  string | null;
+        views: number;
+        url:  string | null;
+        link:  string | null;
+        channel: PlaylistAuthor | null;
+        thumbnail:  string | null;
+        videos: Video[] | [];
     }
 }

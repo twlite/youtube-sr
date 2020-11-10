@@ -1,3 +1,319 @@
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.YouTube = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+module.exports = require("./src/main");
+module.exports.Video = require("./src/Structures/Video");
+module.exports.Channel = require("./src/Structures/Channel");
+module.exports.Thumbnail = require("./src/Structures/Thumbnail");
+module.exports.Util = require("./src/Util");
+module.exports.Playlist = require("./src/Structures/Playlist");
+},{"./src/Structures/Channel":4,"./src/Structures/Playlist":5,"./src/Structures/Thumbnail":6,"./src/Structures/Video":7,"./src/Util":8,"./src/main":9}],2:[function(require,module,exports){
+(function (global){(function (){
+"use strict";
+
+// ref: https://github.com/tc39/proposal-global
+var getGlobal = function () {
+	// the only reliable means to get the global object is
+	// `Function('return this')()`
+	// However, this causes CSP violations in Chrome apps.
+	if (typeof self !== 'undefined') { return self; }
+	if (typeof window !== 'undefined') { return window; }
+	if (typeof global !== 'undefined') { return global; }
+	throw new Error('unable to locate global object');
+}
+
+var global = getGlobal();
+
+module.exports = exports = global.fetch;
+
+// Needed for TypeScript and Webpack.
+if (global.fetch) {
+	exports.default = global.fetch.bind(global);
+}
+
+exports.Headers = global.Headers;
+exports.Request = global.Request;
+exports.Response = global.Response;
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],3:[function(require,module,exports){
+module.exports={
+  "name": "youtube-sr",
+  "version": "1.0.5",
+  "description": "Simple package to search videos or channels on YouTube.",
+  "main": "index.js",
+  "types": "typings/index.d.ts",
+  "scripts": {
+    "webpack": "browserify index.js src/Util.js src/main.js src/Structures/Channel.js src/Structures/Thumbnail.js src/Structures/Video.js --standalone YouTube > webpack/youtube-sr.js",
+    "test": "cd test && node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevSnowflake/youtube-sr.git"
+  },
+  "keywords": [
+    "youtube",
+    "api",
+    "search",
+    "playlist",
+    "channel",
+    "video",
+    "scrape"
+  ],
+  "author": "Snowflake107",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/DevSnowflake/youtube-sr/issues"
+  },
+  "homepage": "https://github.com/DevSnowflake/youtube-sr#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
+
+},{}],4:[function(require,module,exports){
+class Channel {
+
+    constructor(data) {
+        if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
+
+        this._patch(data);
+    }
+
+    /**
+     * Patch raw data
+     * @private
+     * @ignore
+     */
+    _patch(data = {}) {
+        this.name = data.name || null;
+        this.verified = !!data.verified || false;
+        this.id = data.id || null;
+        this.url = data.url || null;
+        this.icon = data.icon || { url: null, width: 0, height: 0 };
+        this.subscribers = data.subscribers || null;
+    }
+
+    /**
+     * Returns channel icon url
+     * @param {object} options Icon options
+     * @param {number} [options.size=0] Icon size. **Default is 0**
+     */
+    iconURL(options = { size: 0 }) {
+        if (typeof options.size !== "number" || options.size < 0) throw new Error("invalid icon size");
+        if (!this.icon.url) return null;
+        const def = this.icon.url.split("=s")[1].split("-c")[0];
+        return this.icon.url.replace(`=s${def}-c`, `=s${options.size}-c`);
+    }
+
+    get type() {
+        return "channel";
+    }
+
+    toString() {
+        return this.name || "";
+    }
+
+    toJSON() {
+        return {
+            name: this.name,
+            verified: this.verified,
+            id: this.id,
+            url: this.url,
+            iconURL: this.iconURL(),
+            type: this.type,
+            subscribers: this.subscribers
+        };
+    }
+
+}
+
+module.exports = Channel;
+},{}],5:[function(require,module,exports){
+class Playlist {
+
+    constructor(data = {}, searchResult = false) {
+        if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
+
+        if (!!searchResult) this._patchSearch(data);
+        else this._patch(data);
+    }
+
+    _patch(data) {
+        this.id = data.id || null;
+        this.title = data.title || null;
+        this.videoCount = data.videoCount || 0;
+        this.lastUpdate = data.lastUpdate || null;
+        this.views = data.views || 0;
+        this.url = data.url || null;
+        this.link = data.link || null;
+        this.channel = data.author || null;
+        this.thumbnail = data.thumbnail || null;
+        this.videos = data.videos || [];
+    }
+
+    _patchSearch(data) {
+        this.id = data.id || null;
+        this.title = data.title || null;
+        this.thumbnail = data.thumbnail || null;
+        this.channel = data.channel || null;
+        this.videos = [];
+        this.videoCount = data.videos || 0;
+        this.url = this.id ? `https://www.youtube.com/playlist?list=${this.id}` : null;
+        this.link = null;
+        this.lastUpdate = null;
+        this.views = 0;
+    }
+
+    get type() {
+        return "playlist";
+    }
+
+}
+
+module.exports = Playlist;
+},{}],6:[function(require,module,exports){
+class Thumbnail {
+
+    /**
+     * Thumbnail constructor
+     * @param data Thumbnail constructor params
+     */
+    constructor(data) {
+        if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
+
+        this._patch(data);
+    }
+
+    /**
+     * Patch raw data
+     * @param data Raw Data
+     * @private
+     * @ignore
+     */
+    _patch(data = {}) {
+        this.id = data.id || null;
+        this.width = data.width || 0;
+        this.height = data.height || 0;
+        this.url = data.url || null;
+    }
+
+    /**
+     * Returns thumbnail url
+     * @param {"default"|"hqdefault"|"mqdefault"|"sddefault"|"maxresdefault"|"ultrares"} thumbnailType Thumbnail type
+     */
+    displayThumbnailURL(thumbnailType = "ultrares") {
+        if (!["default", "hqdefault", "mqdefault", "sddefault", "maxresdefault", "ultrares"].includes(thumbnailType)) throw new Error(`Invalid thumbnail type "${thumbnailType}"!`);
+        if (thumbnailType === "ultrares") return this.url;
+        return `https://i3.ytimg.com/vi/${this.id}/${thumbnailType}.jpg`;
+    }
+
+    /**
+     * Returns default thumbnail
+     * @param {"0"|"1"|"2"|"3"|"4"} id Thumbnail id. **4 returns thumbnail placeholder.**
+     */
+    defaultThumbnailURL(id = "0") {
+        if (!["0", "1", "2", "3", "4"].includes(id)) throw new Error(`Invalid thumbnail id "${id}"!`);
+        return `https://i3.ytimg.com/vi/${this.id}/${id}.jpg`;
+    }
+
+    toString() {
+        return this.url ? `${this.url}` : "";
+    }
+
+    toJSON() {
+        return {
+            id: this.id,
+            width: this.width,
+            height: this.height,
+            url: this.url
+        };
+    }
+
+}
+
+module.exports = Thumbnail;
+},{}],7:[function(require,module,exports){
+const Util = require("../Util");
+const Thumbnail = require("./Thumbnail");
+const Channel = require("./Channel");
+
+class Video {
+
+    constructor(data) {
+        if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
+
+        this._patch(data);
+    }
+
+    /**
+     * Patch raw data
+     * @private
+     * @ignore
+     */
+    _patch(data = {}) {
+        this.id = data.id || null;
+        this.title = data.title || null;
+        this.description = data.description || null;
+        this.durationFormatted = data.duration_raw || "0:00";
+        this.duration = data.duration || 0;
+        this.uploadedAt = data.uploadedAt || null;
+        this.views = parseInt(data.views) || 0;
+        this.thumbnail = new Thumbnail(data.thumbnail || {});
+        this.channel = new Channel(data.channel || {});
+        if (data.videos) this.videos = data.videos;
+    }
+
+    get url() {
+        if (!this.id) return null;
+        return `https://www.youtube.com/watch?v=${this.id}`;
+    }
+
+    /**
+     * YouTube video embed html
+     * @param {object} options Options
+     * @param {string} [options.id] DOM element id
+     * @param {number} [options.width] Iframe width
+     * @param {number} [options.height] Iframe height
+     */
+    embedHTML(options = { id: "ytplayer", width: 640, height: 360 }) {
+        if (!this.id) return null;
+        return `<iframe id="${options.id || "ytplayer"}" type="text/html" width="${options.width || 640}" height="${options.height || 360}" src="${this.embedURL}" frameborder="0"></iframe>`
+    }
+
+    /**
+     * YouTube video embed url
+     */
+    get embedURL() {
+        if (!this.id) return null;
+        return `https://www.youtube.com/embed/${this.id}`;
+    }
+
+    get type() {
+        return "video";
+    }
+
+    toString() {
+        return this.url || "";
+    }
+
+    toJSON() {
+        return {
+            id: this.id,
+            url: this.url,
+            title: this.title,
+            description: this.description,
+            duration: this.duration,
+            duration_formatted: this.durationFormatted,
+            uploadedAt: this.uploadedAt,
+            thumbnail: this.thumbnail.toJSON(),
+            channel: this.channel.toJSON(),
+            views: this.views,
+            type: this.type
+        };
+    }
+
+}
+
+module.exports = Video;
+},{"../Util":8,"./Channel":4,"./Thumbnail":6}],8:[function(require,module,exports){
 const fetch = typeof window !== "undefined" && window.fetch || require("node-fetch").default;
 const Channel = require("./Structures/Channel");
 const Playlist = require("./Structures/Playlist");
@@ -275,3 +591,74 @@ class Util {
 }
 
 module.exports = Util;
+
+},{"./Structures/Channel":4,"./Structures/Playlist":5,"./Structures/Video":7,"node-fetch":2}],9:[function(require,module,exports){
+const Util = require("./Util");
+
+class YouTube {
+
+    constructor() {
+        throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
+    }
+
+    /**
+     * Search
+     * @param {string} query Search youtube
+     * @param {object} options Search options
+     * @param {number} [options.limit=20] Limit
+     * @param {"video"|"channel"|"playlist"|"all"} options.type="video" Type
+     * @param {RequestInit} [options.requestOptions] Request options
+     */
+    static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
+        if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
+        const url = `https://youtube.com/results?q=${query.trim().split(" ").join("+")}`;
+        const html = await Util.getHTML(url, options.requestOptions);
+        return Util.parseSearchResult(html, options);
+    }
+
+    /**
+     * Search one
+     * @param {string} query Search query
+     * @param {"video"|"channel"|"playlist"|"all"} type="video" Search type
+     * @param {RequestInit} requestOptions Request options
+     */
+    static searchOne(query, type = "video", requestOptions = {}) {
+        return new Promise((resolve) => {
+            YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions })
+                .then(res => {
+                    if (!res || !res.length) return resolve(null);
+                    resolve(res[0]);
+                })
+                .catch(e => {
+                    resolve(null);
+                });
+        });
+    }
+
+    /**
+     * Returns playlist details
+     * @param {string} url Playlist URL
+     * @param {object} [options] Options
+     * @param {number} [options.limit=100] Playlist video limit
+     * @param {RequestInit} [options.requestOptions] Request Options
+     */
+    static async getPlaylist(url, options = { limit: 100, requestOptions: {} }) {
+        if (!url || typeof url !== "string") throw new Error(`Expected playlist url, received ${typeof url}!`);
+        Util.validatePlaylist(url);
+        url = Util.getPlaylistURL(url);
+        const html = await Util.getHTML(url, options && options.requestOptions);
+        return Util.getPlaylist(html, options && options.limit);
+    }
+
+    /**
+     * Returns package version
+     */
+    static get version() {
+        return require("../package.json").version;
+    }
+
+}
+
+module.exports = YouTube;
+},{"../package.json":3,"./Util":8}]},{},[1,8,9,4,6,7])(9)
+});

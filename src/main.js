@@ -11,23 +11,23 @@ class YouTube {
      * @param {string} query Search youtube
      * @param {object} options Search options
      * @param {number} [options.limit=20] Limit
-     * @param {"video"|"channel"|"all"} [options.type="video"] Type
+     * @param {"video"|"channel"|"playlist"|"all"} options.type="video" Type
      * @param {RequestInit} [options.requestOptions] Request options
      */
     static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
         const url = `https://youtube.com/results?q=${query.trim().split(" ").join("+")}`;
-        const html = await Util.getHTML(url);
+        const html = await Util.getHTML(url, options.requestOptions);
         return Util.parseSearchResult(html, options);
     }
 
     /**
      * Search one
      * @param {string} query Search query
-     * @param {"video"|"channel"|"all"} type Search type
+     * @param {"video"|"channel"|"playlist"|"all"} type="video" Search type
      * @param {RequestInit} requestOptions Request options
      */
-    static searchOne(query, type = "all", requestOptions = {}) {
+    static searchOne(query, type = "video", requestOptions = {}) {
         return new Promise((resolve) => {
             YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions })
                 .then(res => {
@@ -38,6 +38,21 @@ class YouTube {
                     resolve(null);
                 });
         });
+    }
+
+    /**
+     * Returns playlist details
+     * @param {string} url Playlist URL
+     * @param {object} [options] Options
+     * @param {number} [options.limit=100] Playlist video limit
+     * @param {RequestInit} [options.requestOptions] Request Options
+     */
+    static async getPlaylist(url, options = { limit: 100, requestOptions: {} }) {
+        if (!url || typeof url !== "string") throw new Error(`Expected playlist url, received ${typeof url}!`);
+        Util.validatePlaylist(url);
+        url = Util.getPlaylistURL(url);
+        const html = await Util.getHTML(url, options && options.requestOptions);
+        return Util.getPlaylist(html, options && options.limit);
     }
 
     /**

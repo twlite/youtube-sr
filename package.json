@@ -1,10 +1,11 @@
 {
   "name": "youtube-sr",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Simple package to search videos or channels on YouTube.",
   "main": "index.js",
   "types": "typings/index.d.ts",
   "scripts": {
+    "webpack": "browserify index.js src/Util.js src/main.js src/Structures/Channel.js src/Structures/Thumbnail.js src/Structures/Video.js --standalone YouTube > webpack/youtube-sr.js",
     "test": "cd test && node index.js"
   },
   "repository": {

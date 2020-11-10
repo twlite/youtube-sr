@@ -20,8 +20,9 @@ class Video {
         this.title = data.title || null;
         this.description = data.description || null;
         this.durationFormatted = data.duration_raw || "0:00";
+        this.duration = data.duration || 0;
         this.uploadedAt = data.uploadedAt || null;
-        this.views = data.views || "0";
+        this.views = parseInt(data.views) || 0;
         this.thumbnail = new Thumbnail(data.thumbnail || {});
         this.channel = new Channel(data.channel || {});
         if (data.videos) this.videos = data.videos;
@@ -50,11 +51,6 @@ class Video {
     get embedURL() {
         if (!this.id) return null;
         return `https://www.youtube.com/embed/${this.id}`;
-    }
-
-    get duration() {
-        if (!this.durationFormatted) return 0;
-        return Util.parseDuration(this.durationFormatted);
     }
 
     get type() {
