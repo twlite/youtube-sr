@@ -36,7 +36,7 @@ exports.Response = global.Response;
 },{}],3:[function(require,module,exports){
 module.exports={
   "name": "youtube-sr",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Simple package to search videos or channels on YouTube.",
   "main": "index.js",
   "types": "typings/index.d.ts",
@@ -611,7 +611,7 @@ class YouTube {
      */
     static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
-        const url = `https://youtube.com/results?q=${query.trim().split(" ").join("+")}`;
+        const url = `https://youtube.com/results?q=${encodeURI(query.trim())}`;
         const html = await Util.getHTML(url, options.requestOptions);
         return Util.parseSearchResult(html, options);
     }
