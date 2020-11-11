@@ -12,6 +12,22 @@ class Util {
     }
 
     /**
+     * YouTube playlist URL Regex
+     * @type {RegExp}
+     */
+    static get PlaylistURLRegex() {
+        return PLAYLIST_REGEX;
+    }
+
+    /**
+     * YouTube Playlist ID regex
+     * @type {RegExp}
+     */
+    static get PlaylistIDRegex() {
+        return PLAYLIST_ID;
+    }
+
+    /**
      * Parse HTML
      * @param {string} url Website URL
      * @param {RequestInit} [requestOptions] Request Options
@@ -268,7 +284,7 @@ class Util {
     }
 
     static validatePlaylist(url) {
-        if (typeof url === "string" && PLAYLIST_REGEX.test(url) || PLAYLIST_ID.test(url)) return;
+        if (typeof url === "string" && (PLAYLIST_REGEX.test(url) || PLAYLIST_ID.test(url))) return;
         throw new Error("Invalid playlist url");
     }
 

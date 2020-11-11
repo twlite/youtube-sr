@@ -15,6 +15,7 @@ YouTube.search("indila last dance", { limit: 3 })
 ## search(query, options?)
 ## searchOne(query, options?)
 ## getPlaylist(query, options?)
+## validateURL(any)
 
 ## Response Example
 
