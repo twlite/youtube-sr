@@ -36,7 +36,7 @@ exports.Response = global.Response;
 },{}],3:[function(require,module,exports){
 module.exports={
   "name": "youtube-sr",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Simple package to search videos or channels on YouTube.",
   "main": "index.js",
   "types": "typings/index.d.ts",
@@ -328,6 +328,22 @@ class Util {
     }
 
     /**
+     * YouTube playlist URL Regex
+     * @type {RegExp}
+     */
+    static get PlaylistURLRegex() {
+        return PLAYLIST_REGEX;
+    }
+
+    /**
+     * YouTube Playlist ID regex
+     * @type {RegExp}
+     */
+    static get PlaylistIDRegex() {
+        return PLAYLIST_ID;
+    }
+
+    /**
      * Parse HTML
      * @param {string} url Website URL
      * @param {RequestInit} [requestOptions] Request Options
@@ -584,7 +600,7 @@ class Util {
     }
 
     static validatePlaylist(url) {
-        if (typeof url === "string" && PLAYLIST_REGEX.test(url) || PLAYLIST_ID.test(url)) return;
+        if (typeof url === "string" && (PLAYLIST_REGEX.test(url) || PLAYLIST_ID.test(url))) return;
         throw new Error("Invalid playlist url");
     }
 
@@ -606,7 +622,7 @@ class YouTube {
      * @param {string} query Search youtube
      * @param {object} options Search options
      * @param {number} [options.limit=20] Limit
-     * @param {"video"|"channel"|"playlist"|"all"} options.type="video" Type
+     * @param {"video"|"channel"|"playlist"|"all"} options.type Type
      * @param {RequestInit} [options.requestOptions] Request options
      */
     static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
@@ -619,7 +635,7 @@ class YouTube {
     /**
      * Search one
      * @param {string} query Search query
-     * @param {"video"|"channel"|"playlist"|"all"} type="video" Search type
+     * @param {"video"|"channel"|"playlist"|"all"} type Search type
      * @param {RequestInit} requestOptions Request options
      */
     static searchOne(query, type = "video", requestOptions = {}) {
@@ -648,6 +664,29 @@ class YouTube {
         url = Util.getPlaylistURL(url);
         const html = await Util.getHTML(url, options && options.requestOptions);
         return Util.getPlaylist(html, options && options.limit);
+    }
+
+    /**
+     * Validates playlist
+     * @param {any} url Playlist id or url to validate
+     * @returns {boolean}
+     */
+    static validateURL(url) {
+        if (typeof url !== "string") return false;
+
+        try {
+            Util.validatePlaylist(url);
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    static get Regex() {
+        return {
+            PLAYLIST_URL: Util.PlaylistURLRegex,
+            PLAYLIST_ID: Util.PlaylistIDRegex
+        };
     }
 
     /**
