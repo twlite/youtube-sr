@@ -39,12 +39,22 @@ declare module "youtube-sr" {
         icon: string;
     }
 
+    export interface YouTubeRegexList {
+        PLAYLIST_URL: RegExp;
+        PLAYLIST_ID: RegExp;
+        VIDEO_ID: RegExp;
+        VIDEO_URL: RegExp;
+    }
+
     export type ThumbnailType = "default" | "hqdefault" | "mqdefault" | "sddefault" | "maxresdefault" | "ultrares";
+    export type YTSRValidationType = "PLAYLIST" | "PLAYLIST_ID" | "VIDEO" | "VIDEO_ID";
 
     export default class YouTube {
         public static search(query: string, options?: SearchOptions): Promise<(Video|Channel|Playlist)[]>;
         public static searchOne(query: string, options?: SearchOptionsOne): Promise<Video|Channel|Playlist>;
         public static getPlaylist(url: string, options?: PlaylistFetchOptions): Promise<Playlist>;
+        public static validate(src: string, type?: YTSRValidationType): boolean;
+        public static get Regex(): YouTubeRegexList;
         public static get version(): string;
     }
 

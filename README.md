@@ -15,11 +15,11 @@ YouTube.search("indila last dance", { limit: 3 })
 ## search(query, options?)
 ## searchOne(query, options?)
 ## getPlaylist(query, options?)
-## validateURL(any)
+## validate(src, type)
 
 ## Response Example
 
-> **Note:** `subscribers` count may be `null` for the channel objects received from `video` or `playlist`.
+> **Note:** `subscribers` count is `null` for the channel objects received from `video` or `playlist`.
 
 ```js
 [

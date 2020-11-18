@@ -16,7 +16,7 @@ class YouTube {
      */
     static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
-        const url = `https://youtube.com/results?q=${encodeURI(query.trim())}`;
+        const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en`;
         const html = await Util.getHTML(url, options.requestOptions);
         return Util.parseSearchResult(html, options);
     }
@@ -51,30 +51,39 @@ class YouTube {
         if (!url || typeof url !== "string") throw new Error(`Expected playlist url, received ${typeof url}!`);
         Util.validatePlaylist(url);
         url = Util.getPlaylistURL(url);
-        const html = await Util.getHTML(url, options && options.requestOptions);
+        const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
         return Util.getPlaylist(html, options && options.limit);
     }
 
     /**
      * Validates playlist
-     * @param {any} url Playlist id or url to validate
+     * @param {string} url Playlist id or url/video id or url to validate
+     * @param {"VIDEO"|"VIDEO_ID"|"PLAYLIST"|"PLAYLIST_ID"} type URL validation type
      * @returns {boolean}
      */
-    static validateURL(url) {
+    static validate(url, type = "PLAYLIST") {
         if (typeof url !== "string") return false;
-
-        try {
-            Util.validatePlaylist(url);
-            return true;
-        } catch(e) {
-            return false;
+        if (!type) type = "PLAYLIST";
+        switch(type) {
+            case "PLAYLIST":
+                return this.Regex.PLAYLIST_URL.test(url);
+            case "PLAYLIST_ID":
+                return this.Regex.PLAYLIST_ID.test(url);
+            case "VIDEO":
+                return this.Regex.VIDEO_URL.test(url);
+            case "VIDEO_ID":
+                return this.Regex.VIDEO_ID.test(url);
+            default:
+                return false;
         }
     }
 
     static get Regex() {
         return {
             PLAYLIST_URL: Util.PlaylistURLRegex,
-            PLAYLIST_ID: Util.PlaylistIDRegex
+            PLAYLIST_ID: Util.PlaylistIDRegex,
+            VIDEO_ID: /^[a-zA-Z0-9-_]{11}$/,
+            VIDEO_URL: /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
         };
     }
 

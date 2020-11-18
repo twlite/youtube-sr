@@ -1,4 +1,3 @@
-const Util = require("../Util");
 const Thumbnail = require("./Thumbnail");
 const Channel = require("./Channel");
 

@@ -215,7 +215,8 @@ class Util {
         let parsed;
         let playlistDetails;
         try {
-            parsed = JSON.parse(html.split("{\"playlistVideoListRenderer\":{\"contents\":")[1].split("}],\"playlistId\"")[0]+"}]");
+            const rawJSON = `${html.split("{\"playlistVideoListRenderer\":{\"contents\":")[1].split("}],\"playlistId\"")[0]}}]`;
+            parsed = JSON.parse(rawJSON);
             playlistDetails = JSON.parse(html.split("{\"playlistSidebarRenderer\":")[1].split("\n")[0].slice(0, -3)).items;
 		} catch (e) {
 			return null;
@@ -279,12 +280,12 @@ class Util {
 
     static getPlaylistURL(url) {
         if (typeof url !== "string") return null;
-        if (PLAYLIST_ID.test(url)) return `https://www.youtube.com/playlist?list=${url}`;
-        else if (PLAYLIST_REGEX.test(url)) return url;
+        if (PLAYLIST_REGEX.test(url)) return url;
+        return `https://www.youtube.com/playlist?list=${url}`;
     }
 
     static validatePlaylist(url) {
-        if (typeof url === "string" && (PLAYLIST_REGEX.test(url) || PLAYLIST_ID.test(url))) return;
+        if (typeof url === "string" && !!(PLAYLIST_REGEX.test(url) || PLAYLIST_ID.test(url))) return;
         throw new Error("Invalid playlist url");
     }
 
