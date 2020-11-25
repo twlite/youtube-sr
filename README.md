@@ -13,7 +13,7 @@ $ npm i youtube-sr
 ## Deno
 
 ```js
-import YouTube from "https://deno.land/x/youtube-sr/mod.ts";
+import YouTube from "https://deno.land/x/youtube_sr/mod.ts";
 ```
 
 -------------------------------------------------------------------------------------------------
