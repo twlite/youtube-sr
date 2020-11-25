@@ -13,7 +13,7 @@ $ npm i youtube-sr
 ## Deno
 
 ```js
-import YouTube from "https://cdn.skypack.dev/youtube-sr";
+import YouTube from "https://deno.land/x/youtube-sr/mod.ts";
 ```
 
 -------------------------------------------------------------------------------------------------
@@ -36,8 +36,6 @@ import YouTube from "https://cdn.skypack.dev/youtube-sr";
 # Example
 
 ```js
-const YouTube = require("youtube-sr");
-
 YouTube.search("indila last dance", { limit: 3 })
     .then(x => console.log(x))
     .catch(console.error);

@@ -281,6 +281,7 @@ class Util {
     static getPlaylistURL(url) {
         if (typeof url !== "string") return null;
         const group = PLAYLIST_ID.exec(url);
+        if (!group) return null;
         const finalURL = `https://www.youtube.com/playlist?list=${group[0]}`;
         return finalURL;
     }
