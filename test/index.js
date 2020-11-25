@@ -1,6 +1,7 @@
 const YouTube = require("../index");
+const url = "https://www.youtube.com/watch?v=astISOttCQ0&list=PLwBAMTaOF-yjCsmJl6ketVbi8Kucvd9Bi";
 
-YouTube.getPlaylist("https://youtube.com/playlist?list=PLwBAMTaOF-yjCsmJl6ketVbi8Kucvd9Bi", { limit: 1 })
+YouTube.getPlaylist(url, { limit: 1 })
     .then(x => console.log(x))
     .catch(console.error);
 

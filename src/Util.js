@@ -280,8 +280,9 @@ class Util {
 
     static getPlaylistURL(url) {
         if (typeof url !== "string") return null;
-        if (PLAYLIST_REGEX.test(url)) return url;
-        return `https://www.youtube.com/playlist?list=${url}`;
+        const group = PLAYLIST_ID.exec(url);
+        const finalURL = `https://www.youtube.com/playlist?list=${group[0]}`;
+        return finalURL;
     }
 
     static validatePlaylist(url) {

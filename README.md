@@ -1,6 +1,38 @@
 # YouTube Search
 Simple package to search videos or channels on YouTube.
 
+# Installation
+## Node
+
+```sh
+$ npm i youtube-sr
+```
+
+-------------------------------------------------------------------------------------------------
+
+## Deno
+
+```js
+import YouTube from "https://cdn.skypack.dev/youtube-sr";
+```
+
+-------------------------------------------------------------------------------------------------
+
+## Web
+
+```html
+<!-- Recommended -->
+<script type="module">
+import YouTube from "https://cdn.skypack.dev/youtube-sr";
+</script>
+```
+
+```html
+<script src="https://raw.githubusercontent.com/DevSnowflake/youtube-sr/master/webpack/youtube-sr.js"></script>
+```
+
+-------------------------------------------------------------------------------------------------
+
 # Example
 
 ```js

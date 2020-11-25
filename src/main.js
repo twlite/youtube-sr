@@ -52,7 +52,12 @@ class YouTube {
         Util.validatePlaylist(url);
         url = Util.getPlaylistURL(url);
         const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
-        return Util.getPlaylist(html, options && options.limit);
+        
+        try {
+            return Util.getPlaylist(html, options && options.limit);
+        } catch(e) {
+            throw new Error(`Could not parse playist: ${e.message || e}`);
+        }
     }
 
     /**

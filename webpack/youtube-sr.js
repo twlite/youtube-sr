@@ -37,7 +37,7 @@ exports.Response = global.Response;
 },{}],3:[function(require,module,exports){
 module.exports={
   "name": "youtube-sr",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Simple package to search videos or channels on YouTube.",
   "main": "index.js",
   "types": "typings/index.d.ts",
@@ -596,8 +596,9 @@ class Util {
 
     static getPlaylistURL(url) {
         if (typeof url !== "string") return null;
-        if (PLAYLIST_REGEX.test(url)) return url;
-        return `https://www.youtube.com/playlist?list=${url}`;
+        const group = PLAYLIST_ID.exec(url);
+        const finalURL = `https://www.youtube.com/playlist?list=${group[0]}`;
+        return finalURL;
     }
 
     static validatePlaylist(url) {
@@ -664,7 +665,12 @@ class YouTube {
         Util.validatePlaylist(url);
         url = Util.getPlaylistURL(url);
         const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
-        return Util.getPlaylist(html, options && options.limit);
+        
+        try {
+            return Util.getPlaylist(html, options && options.limit);
+        } catch(e) {
+            throw new Error(`Could not parse playist: ${e.message || e}`);
+        }
     }
 
     /**
