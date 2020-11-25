@@ -16,23 +16,6 @@ $ npm i youtube-sr
 import YouTube from "https://deno.land/x/youtube_sr/mod.ts";
 ```
 
--------------------------------------------------------------------------------------------------
-
-## Web
-
-```html
-<!-- Recommended -->
-<script type="module">
-import YouTube from "https://cdn.skypack.dev/youtube-sr";
-</script>
-```
-
-```html
-<script src="https://raw.githubusercontent.com/DevSnowflake/youtube-sr/master/webpack/youtube-sr.js"></script>
-```
-
--------------------------------------------------------------------------------------------------
-
 # Example
 
 ```js
