@@ -37,7 +37,7 @@ exports.Response = global.Response;
 },{}],3:[function(require,module,exports){
 module.exports={
   "name": "youtube-sr",
-  "version": "2.0.1",
+  "version": "2.0.5",
   "description": "Simple package to search videos or channels on YouTube.",
   "main": "index.js",
   "types": "typings/index.d.ts",
@@ -533,7 +533,7 @@ class Util {
         try {
             const rawJSON = `${html.split("{\"playlistVideoListRenderer\":{\"contents\":")[1].split("}],\"playlistId\"")[0]}}]`;
             parsed = JSON.parse(rawJSON);
-            playlistDetails = JSON.parse(html.split("{\"playlistSidebarRenderer\":")[1].split("\n")[0].slice(0, -3)).items;
+            playlistDetails = JSON.parse(html.split("{\"playlistSidebarRenderer\":")[1].split("}};</script>")[0]).items;
 		} catch (e) {
 			return null;
         }
@@ -597,6 +597,7 @@ class Util {
     static getPlaylistURL(url) {
         if (typeof url !== "string") return null;
         const group = PLAYLIST_ID.exec(url);
+        if (!group) return null;
         const finalURL = `https://www.youtube.com/playlist?list=${group[0]}`;
         return finalURL;
     }

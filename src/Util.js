@@ -217,7 +217,7 @@ class Util {
         try {
             const rawJSON = `${html.split("{\"playlistVideoListRenderer\":{\"contents\":")[1].split("}],\"playlistId\"")[0]}}]`;
             parsed = JSON.parse(rawJSON);
-            playlistDetails = JSON.parse(html.split("{\"playlistSidebarRenderer\":")[1].split("\n")[0].slice(0, -3)).items;
+            playlistDetails = JSON.parse(html.split("{\"playlistSidebarRenderer\":")[1].split("}};</script>")[0]).items;
 		} catch (e) {
 			return null;
         }
