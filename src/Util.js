@@ -2,7 +2,7 @@ const fetch = typeof window !== "undefined" && window.fetch || require("node-fet
 const Channel = require("./Structures/Channel");
 const Playlist = require("./Structures/Playlist");
 const Video = require("./Structures/Video");
-const PLAYLIST_REGEX = /https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41})/;
+const PLAYLIST_REGEX = /https?:\/\/(www.)?youtube.com\/.*\?.*\blist=((PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41})/;
 const PLAYLIST_ID = /(PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41}/;
 
 class Util {
