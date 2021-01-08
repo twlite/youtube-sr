@@ -1,9 +1,16 @@
-const fetch = typeof window !== "undefined" && window.fetch || require("node-fetch").default;
-const Channel = require("./Structures/Channel");
-const Playlist = require("./Structures/Playlist");
-const Video = require("./Structures/Video");
+import fetch from "node-fetch";
+import Channel from "./Structures/Channel";
+import Playlist from "./Structures/Playlist";
+import Video from "./Structures/Video";
+
 const PLAYLIST_REGEX = /https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41})/;
 const PLAYLIST_ID = /(PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41}/;
+
+export interface ParseSearchInterface {
+    type?: "video" | "playlist" | "channel" | "all";
+    limit?: number;
+    requestOptions?: RequestInit;
+}
 
 class Util {
 
@@ -15,7 +22,7 @@ class Util {
      * YouTube playlist URL Regex
      * @type {RegExp}
      */
-    static get PlaylistURLRegex() {
+    static get PlaylistURLRegex(): RegExp {
         return PLAYLIST_REGEX;
     }
 
@@ -23,7 +30,7 @@ class Util {
      * YouTube Playlist ID regex
      * @type {RegExp}
      */
-    static get PlaylistIDRegex() {
+    static get PlaylistIDRegex(): RegExp {
         return PLAYLIST_ID;
     }
 
@@ -33,7 +40,9 @@ class Util {
      * @param {RequestInit} [requestOptions] Request Options
      * @returns {Promise<string>}
      */
-    static getHTML(url, requestOptions = {}) {
+    static getHTML(url:string, requestOptions?: RequestInit): Promise<string> {
+        if (!requestOptions) requestOptions = {};
+
         return new Promise((resolve, reject) => {
             const prop = typeof window === "undefined" ? requestOptions : Object.defineProperty(requestOptions, "mode", { value: "no-cors" });
             fetch(url, prop)
@@ -47,11 +56,11 @@ class Util {
      * Returns duration in ms
      * @param {string} duration Duration to parse
      */
-    static parseDuration(duration) {
+    static parseDuration(duration: string): number {
         const args = duration.split(":");
         let dur = 0;
 
-        switch(args.length) {
+        switch (args.length) {
             case 3:
                 dur = parseInt(args[0]) * 60 * 60 * 1000 + parseInt(args[1]) * 60 * 1000 + parseInt(args[2]) * 1000;
                 break;
@@ -70,10 +79,11 @@ class Util {
      * @param {string} html HTML
      * @param options Options
      */
-    static parseSearchResult(html, options = { type: "video", limit: 0 }) {
+    static parseSearchResult(html: string, options?: ParseSearchInterface): (Video | Channel | Playlist)[] {
         if (!html) throw new Error("Invalid raw data");
+        if (!options) options = { type: "video", limit: 0 };
         if (!options.type) options.type = "video";
-        
+
         const results = [];
         let details = [];
         let fetched = false;
@@ -84,20 +94,20 @@ class Util {
             html = data.replace(/\\x([0-9A-F]{2})/ig, (...items) => {
                 return String.fromCharCode(parseInt(items[1], 16));
             });
-        } catch(e) { /* do nothing */ }
-        
+        } catch (e) { /* do nothing */ }
+
         try {
             details = JSON.parse(html.split('{"itemSectionRenderer":{"contents":')[html.split('{"itemSectionRenderer":{"contents":').length - 1].split(',"continuations":[{')[0]);
             fetched = true;
-        } catch(e) { /* do nothing */ }
+        } catch (e) { /* do nothing */ }
 
         if (!fetched) {
             try {
                 details = JSON.parse(html.split('{"itemSectionRenderer":')[html.split('{"itemSectionRenderer":').length - 1].split('},{"continuationItemRenderer":{')[0]).contents;
                 fetched = true;
-            } catch(e) { /* do nothing */ }
+            } catch (e) { /* do nothing */ }
         }
-        
+
         if (!fetched) return [];
 
         for (let i = 0; i < details.length; i++) {
@@ -135,7 +145,7 @@ class Util {
      * Parse channel from raw data
      * @param {object} data Raw data to parse video from
      */
-    static parseChannel(data = {}) {
+    static parseChannel(data?: any): Channel {
         if (!data || !data.channelRenderer) return;
         const badge = data.channelRenderer.ownerBadges && data.channelRenderer.ownerBadges[0];
         let url = `https://www.youtube.com${data.channelRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl || data.channelRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url}`;
@@ -155,7 +165,7 @@ class Util {
      * Parse video from raw data
      * @param {object} data Raw data to parse video from
      */
-    static parseVideo(data = {}) {
+    static parseVideo(data?: any): Video {
         if (!data || !data.videoRenderer) return;
 
         const badge = data.videoRenderer.ownerBadges && data.videoRenderer.ownerBadges[0];
@@ -190,9 +200,9 @@ class Util {
         return res;
     }
 
-    static parsePlaylist(data = {}) {
+    static parsePlaylist(data?: any): Playlist {
         if (!data.playlistRenderer) return;
-        
+
         const res = new Playlist({
             id: data.playlistRenderer.playlistId,
             title: data.playlistRenderer.title.simpleText,
@@ -208,7 +218,7 @@ class Util {
         return res;
     }
 
-    static getPlaylist(html, limit = 100) {
+    static getPlaylist(html: string, limit?: number): Playlist {
         if (!limit || typeof limit !== "number") limit = 100;
         if (limit <= 0) limit = 100;
         const videos = [];
@@ -218,10 +228,10 @@ class Util {
             const rawJSON = `${html.split("{\"playlistVideoListRenderer\":{\"contents\":")[1].split("}],\"playlistId\"")[0]}}]`;
             parsed = JSON.parse(rawJSON);
             playlistDetails = JSON.parse(html.split("{\"playlistSidebarRenderer\":")[1].split("}};</script>")[0]).items;
-		} catch (e) {
-			return null;
+        } catch (e) {
+            return null;
         }
-        
+
         for (let i = 0; i < parsed.length; i++) {
             if (limit === videos.length) break;
             const info = parsed[i].playlistVideoRenderer;
@@ -247,14 +257,14 @@ class Util {
                 }
             }));
         }
-        
+
         const data = playlistDetails[0].playlistSidebarPrimaryInfoRenderer;
 
         if (!data.title.runs || !data.title.runs.length) return null;
 
-		const author = playlistDetails[1].playlistSidebarSecondaryInfoRenderer.videoOwner;
+        const author = playlistDetails[1].playlistSidebarSecondaryInfoRenderer.videoOwner;
         const views = data.stats.length === 3 ? data.stats[1].simpleText.replace(/[^0-9]/g, "") : 0;
-        const lastUpdate = data.stats.length === 3 ? (data.stats[2].runs ? data.stats[2].runs[0].text : data.stats[2].simpleText) : primaryRenderer.stats[1].simpleText;
+        const lastUpdate = data.stats.length === 3 ? (data.stats[2].runs ? data.stats[2].runs[0].text : data.stats[2].simpleText) : data.stats[1].simpleText;
         const videosCount = data.stats[0].runs[0].text.replace(/[^0-9]/g, "") || 0;
 
         const res = new Playlist({
@@ -278,7 +288,7 @@ class Util {
         return res;
     }
 
-    static getPlaylistURL(url) {
+    static getPlaylistURL(url: string): string {
         if (typeof url !== "string") return null;
         const group = PLAYLIST_ID.exec(url);
         if (!group) return null;
@@ -286,11 +296,11 @@ class Util {
         return finalURL;
     }
 
-    static validatePlaylist(url) {
+    static validatePlaylist(url: string): void {
         if (typeof url === "string" && !!(PLAYLIST_REGEX.test(url) || PLAYLIST_ID.test(url))) return;
         throw new Error("Invalid playlist url");
     }
 
 }
 
-module.exports = Util;
+export default Util;

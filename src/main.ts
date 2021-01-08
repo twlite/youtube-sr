@@ -1,4 +1,19 @@
-const Util = require("./Util");
+import Util from "./Util";
+import Channel from "./Structures/Channel";
+import Playlist from "./Structures/Playlist";
+import Video from "./Structures/Video";
+import Thumbnail from "./Structures/Thumbnail";
+
+export interface SearchOptions {
+    limit?: number;
+    type?: "video" | "channel" | "playlist" | "all";
+    requestOptions?: RequestInit;
+}
+
+export interface PlaylistOptions {
+    limit?: number;
+    requestOptions?: RequestInit;
+}
 
 class YouTube {
 
@@ -14,7 +29,8 @@ class YouTube {
      * @param {"video"|"channel"|"playlist"|"all"} options.type Type
      * @param {RequestInit} [options.requestOptions] Request options
      */
-    static async search(query, options = { limit: 20, type: "video", requestOptions: {} }) {
+    static async search(query: string, options?: SearchOptions): Promise<(Video | Channel | Playlist)[]> {
+        if (!options) options = { limit: 20, type: "video", requestOptions: {} };
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
         const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en`;
         const html = await Util.getHTML(url, options.requestOptions);
@@ -27,7 +43,12 @@ class YouTube {
      * @param {"video"|"channel"|"playlist"|"all"} type Search type
      * @param {RequestInit} requestOptions Request options
      */
-    static searchOne(query, type = "video", requestOptions = {}) {
+    static searchOne(query: string, type?: "video", requestOptions?: RequestInit): Promise<Video>;
+    static searchOne(query: string, type?: "channel", requestOptions?: RequestInit): Promise<Channel>;
+    static searchOne(query: string, type?: "playlist", requestOptions?: RequestInit): Promise<Playlist>;
+    static searchOne(query: string, type?: "all", requestOptions?: RequestInit): Promise<(Video | Channel | Playlist)>;
+    static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", requestOptions?: RequestInit): Promise<(Video | Channel | Playlist)> {
+        if (!type) type = "video";
         return new Promise((resolve) => {
             YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions })
                 .then(res => {
@@ -47,15 +68,16 @@ class YouTube {
      * @param {number} [options.limit=100] Playlist video limit
      * @param {RequestInit} [options.requestOptions] Request Options
      */
-    static async getPlaylist(url, options = { limit: 100, requestOptions: {} }) {
+    static async getPlaylist(url: string, options?: PlaylistOptions): Promise<Playlist> {
+        if (!options) options = { limit: 100, requestOptions: {} };
         if (!url || typeof url !== "string") throw new Error(`Expected playlist url, received ${typeof url}!`);
         Util.validatePlaylist(url);
         url = Util.getPlaylistURL(url);
         const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
-        
+
         try {
             return Util.getPlaylist(html, options && options.limit);
-        } catch(e) {
+        } catch (e) {
             throw new Error(`Could not parse playist: ${e.message || e}`);
         }
     }
@@ -66,10 +88,10 @@ class YouTube {
      * @param {"VIDEO"|"VIDEO_ID"|"PLAYLIST"|"PLAYLIST_ID"} type URL validation type
      * @returns {boolean}
      */
-    static validate(url, type = "PLAYLIST") {
+    static validate(url: string, type?: "VIDEO" | "VIDEO_ID" | "PLAYLIST" | "PLAYLIST_ID"): boolean {
         if (typeof url !== "string") return false;
         if (!type) type = "PLAYLIST";
-        switch(type) {
+        switch (type) {
             case "PLAYLIST":
                 return this.Regex.PLAYLIST_URL.test(url);
             case "PLAYLIST_ID":
@@ -91,14 +113,8 @@ class YouTube {
             VIDEO_URL: /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
         };
     }
-
-    /**
-     * Returns package version
-     */
-    static get version() {
-        return require("../package.json").version;
-    }
-
 }
 
-module.exports = YouTube;
+export { Util, Thumbnail, Channel, Playlist, Video, YouTube };
+
+export default YouTube;

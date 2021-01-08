@@ -1,6 +1,18 @@
-class Channel {
+export interface ChannelIconInterface {
+    url?: string;
+    width: number;
+    height: number;
+}
 
-    constructor(data) {
+class Channel {
+    name?: string;
+    verified: boolean;
+    id?: string;
+    url?: string;
+    icon: ChannelIconInterface;
+    subscribers?: string;
+
+    constructor(data: any) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
 
         this._patch(data);
@@ -11,7 +23,9 @@ class Channel {
      * @private
      * @ignore
      */
-    _patch(data = {}) {
+    _patch(data: any): void {
+        if (!data) data = {};
+
         this.name = data.name || null;
         this.verified = !!data.verified || false;
         this.id = data.id || null;
@@ -25,18 +39,18 @@ class Channel {
      * @param {object} options Icon options
      * @param {number} [options.size=0] Icon size. **Default is 0**
      */
-    iconURL(options = { size: 0 }) {
+    iconURL(options = { size: 0 }): string {
         if (typeof options.size !== "number" || options.size < 0) throw new Error("invalid icon size");
         if (!this.icon.url) return null;
         const def = this.icon.url.split("=s")[1].split("-c")[0];
         return this.icon.url.replace(`=s${def}-c`, `=s${options.size}-c`);
     }
 
-    get type() {
+    get type(): "channel" {
         return "channel";
     }
 
-    toString() {
+    toString(): string {
         return this.name || "";
     }
 
@@ -54,4 +68,4 @@ class Channel {
 
 }
 
-module.exports = Channel;
+export default Channel;

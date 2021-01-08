@@ -1,4 +1,18 @@
+import Thumbnail from "./Thumbnail";
+import Video from "./Video";
+import Channel from "./Channel";
+
 class Playlist {
+    id?: string;
+    title?: string;
+    videoCount: number;
+    lastUpdate?: string;
+    views?: number;
+    url?: string;
+    link?: string;
+    channel?: Channel;
+    thumbnail?: Thumbnail;
+    videos?: Video[];
 
     constructor(data = {}, searchResult = false) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
@@ -7,7 +21,7 @@ class Playlist {
         else this._patch(data);
     }
 
-    _patch(data) {
+    _patch(data: any) {
         this.id = data.id || null;
         this.title = data.title || null;
         this.videoCount = data.videoCount || 0;
@@ -20,7 +34,7 @@ class Playlist {
         this.videos = data.videos || [];
     }
 
-    _patchSearch(data) {
+    _patchSearch(data: any) {
         this.id = data.id || null;
         this.title = data.title || null;
         this.thumbnail = data.thumbnail || null;
@@ -33,10 +47,10 @@ class Playlist {
         this.views = 0;
     }
 
-    get type() {
+    get type(): "playlist" {
         return "playlist";
     }
 
 }
 
-module.exports = Playlist;
+export default Playlist;

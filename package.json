@@ -1,12 +1,11 @@
 {
   "name": "youtube-sr",
-  "version": "2.0.5",
+  "version": "3.0.0-dev",
   "description": "Simple package to search videos or channels on YouTube.",
-  "main": "index.js",
-  "types": "typings/index.d.ts",
+  "main": "build/main.js",
+  "types": "build/main.d.ts",
   "scripts": {
-    "webpack": "browserify index.js src/Util.js src/main.js src/Structures/Channel.js src/Structures/Thumbnail.js src/Structures/Video.js --standalone YouTube > webpack/youtube-sr.js",
-    "test": "cd test && node index.js"
+    "test": "cd test && ts-node index.ts"
   },
   "repository": {
     "type": "git",
@@ -29,5 +28,10 @@
   "homepage": "https://github.com/DevSnowflake/youtube-sr#readme",
   "dependencies": {
     "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.5.7",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
   }
 }

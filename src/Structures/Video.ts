@@ -1,9 +1,19 @@
-const Thumbnail = require("./Thumbnail");
-const Channel = require("./Channel");
+import Channel from "./Channel";
+import Thumbnail from "./Thumbnail";
 
 class Video {
+    id?: string;
+    title?: string;
+    description?: string;
+    durationFormatted: string;
+    duration: number;
+    uploadedAt?: string;
+    views: number;
+    thumbnail?: Thumbnail;
+    channel?: Channel;
+    videos?: Video[];
 
-    constructor(data) {
+    constructor(data: any) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
 
         this._patch(data);
@@ -14,7 +24,9 @@ class Video {
      * @private
      * @ignore
      */
-    _patch(data = {}) {
+    _patch(data: any): void {
+        if (!data) data = {};
+
         this.id = data.id || null;
         this.title = data.title || null;
         this.description = data.description || null;
@@ -27,7 +39,7 @@ class Video {
         if (data.videos) this.videos = data.videos;
     }
 
-    get url() {
+    get url(): string {
         if (!this.id) return null;
         return `https://www.youtube.com/watch?v=${this.id}`;
     }
@@ -39,7 +51,7 @@ class Video {
      * @param {number} [options.width] Iframe width
      * @param {number} [options.height] Iframe height
      */
-    embedHTML(options = { id: "ytplayer", width: 640, height: 360 }) {
+    embedHTML(options = { id: "ytplayer", width: 640, height: 360 }): string {
         if (!this.id) return null;
         return `<iframe id="${options.id || "ytplayer"}" type="text/html" width="${options.width || 640}" height="${options.height || 360}" src="${this.embedURL}" frameborder="0"></iframe>`
     }
@@ -47,16 +59,16 @@ class Video {
     /**
      * YouTube video embed url
      */
-    get embedURL() {
+    get embedURL(): string{
         if (!this.id) return null;
         return `https://www.youtube.com/embed/${this.id}`;
     }
 
-    get type() {
+    get type(): "video" {
         return "video";
     }
 
-    toString() {
+    toString(): string {
         return this.url || "";
     }
 
@@ -78,4 +90,4 @@ class Video {
 
 }
 
-module.exports = Video;
+export default Video;
