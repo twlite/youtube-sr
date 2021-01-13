@@ -235,7 +235,7 @@ class Util {
         for (let i = 0; i < parsed.length; i++) {
             if (limit === videos.length) break;
             const info = parsed[i].playlistVideoRenderer;
-            if (!info.shortBylineText) continue; // skip unknown videos
+            if (!info || !info.shortBylineText) continue; // skip unknown videos
 
             videos.push(new Video({
                 id: info.videoId,

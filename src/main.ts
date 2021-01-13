@@ -78,7 +78,7 @@ class YouTube {
         try {
             return Util.getPlaylist(html, options && options.limit);
         } catch (e) {
-            throw new Error(`Could not parse playist: ${e.message || e}`);
+            throw e;
         }
     }
 

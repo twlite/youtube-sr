@@ -1,6 +1,6 @@
 {
   "name": "youtube-sr",
-  "version": "3.0.0-dev",
+  "version": "3.0.0",
   "description": "Simple package to search videos or channels on YouTube.",
   "main": "build/main.js",
   "types": "build/main.d.ts",

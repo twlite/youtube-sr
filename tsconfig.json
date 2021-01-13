@@ -7,7 +7,7 @@
 		"strictNullChecks": false,
 		"esModuleInterop": true,
 		"outDir": "./build/",
-		"rootDir": "./src/"
+		"rootDir": "./src/",
 	},
 	"exclude": ["node_modules", "deno", "test"]
 }
