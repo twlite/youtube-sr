@@ -1,15 +1,20 @@
-import fetch from "node-fetch";
 import Channel from "./Structures/Channel";
 import Playlist from "./Structures/Playlist";
 import Video from "./Structures/Video";
 
 const PLAYLIST_REGEX = /https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41})/;
 const PLAYLIST_ID = /(PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41}/;
+const fetch = getFetch();
 
 export interface ParseSearchInterface {
     type?: "video" | "playlist" | "channel" | "all";
     limit?: number;
     requestOptions?: RequestInit;
+}
+
+function getFetch() {
+    if (typeof window !== "undefined") return window.fetch;
+    return require("node-fetch");
 }
 
 class Util {
@@ -46,9 +51,9 @@ class Util {
         return new Promise((resolve, reject) => {
             const prop = typeof window === "undefined" ? requestOptions : Object.defineProperty(requestOptions, "mode", { value: "no-cors" });
             fetch(url, prop)
-                .then(res => res.text())
-                .then(html => resolve(html))
-                .catch(e => reject(e));
+                .then((res: any) => res.text())
+                .then((html: string) => resolve(html))
+                .catch((e: Error) => reject(e));
         });
     }
 
