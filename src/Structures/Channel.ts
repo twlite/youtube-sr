@@ -23,7 +23,7 @@ class Channel {
      * @private
      * @ignore
      */
-    _patch(data: any): void {
+    private _patch(data: any): void {
         if (!data) data = {};
 
         this.name = data.name || null;

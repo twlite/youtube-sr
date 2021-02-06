@@ -12,7 +12,7 @@ class Playlist {
     link?: string;
     channel?: Channel;
     thumbnail?: Thumbnail;
-    videos?: Video[];
+    videos: Video[];
 
     constructor(data = {}, searchResult = false) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
@@ -21,7 +21,7 @@ class Playlist {
         else this._patch(data);
     }
 
-    _patch(data: any) {
+    private _patch(data: any) {
         this.id = data.id || null;
         this.title = data.title || null;
         this.videoCount = data.videoCount || 0;
@@ -34,7 +34,7 @@ class Playlist {
         this.videos = data.videos || [];
     }
 
-    _patchSearch(data: any) {
+    private _patchSearch(data: any) {
         this.id = data.id || null;
         this.title = data.title || null;
         this.thumbnail = data.thumbnail || null;
@@ -49,6 +49,10 @@ class Playlist {
 
     get type(): "playlist" {
         return "playlist";
+    }
+
+    *[Symbol.iterator](): IterableIterator<Video> {
+        yield* this.videos;
     }
 
 }

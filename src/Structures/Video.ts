@@ -24,7 +24,7 @@ class Video {
      * @private
      * @ignore
      */
-    _patch(data: any): void {
+    private _patch(data: any): void {
         if (!data) data = {};
 
         this.id = data.id || null;
@@ -39,7 +39,7 @@ class Video {
         if (data.videos) this.videos = data.videos;
     }
 
-    get url(): string {
+    get url() {
         if (!this.id) return null;
         return `https://www.youtube.com/watch?v=${this.id}`;
     }

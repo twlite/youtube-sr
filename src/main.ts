@@ -29,7 +29,11 @@ class YouTube {
      * @param {"video"|"channel"|"playlist"|"all"} options.type Type
      * @param {RequestInit} [options.requestOptions] Request options
      */
-    static async search(query: string, options?: SearchOptions): Promise<(Video | Channel | Playlist)[]> {
+    static async search(query: string, options?: SearchOptions & { type: "video" }): Promise<Video[]>;
+    static async search(query: string, options?: SearchOptions & { type: "channel" }): Promise<Channel[]>;
+    static async search(query: string, options?: SearchOptions & { type: "playlist" }): Promise<Playlist[]>;
+    static async search(query: string, options?: SearchOptions & { type: "all" }): Promise<(Video | Channel | Playlist)[]>;
+    static async search(query: string, options?: SearchOptions): Promise<(Video|Channel|Playlist)[]> {
         if (!options) options = { limit: 20, type: "video", requestOptions: {} };
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
         const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en`;
@@ -46,10 +50,10 @@ class YouTube {
     static searchOne(query: string, type?: "video", requestOptions?: RequestInit): Promise<Video>;
     static searchOne(query: string, type?: "channel", requestOptions?: RequestInit): Promise<Channel>;
     static searchOne(query: string, type?: "playlist", requestOptions?: RequestInit): Promise<Playlist>;
-    static searchOne(query: string, type?: "all", requestOptions?: RequestInit): Promise<(Video | Channel | Playlist)>;
-    static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", requestOptions?: RequestInit): Promise<(Video | Channel | Playlist)> {
+    static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", requestOptions?: RequestInit): Promise<(Video|Channel|Playlist)> {
         if (!type) type = "video";
         return new Promise((resolve) => {
+            // @ts-ignore
             YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions })
                 .then(res => {
                     if (!res || !res.length) return resolve(null);

@@ -20,7 +20,7 @@ class Thumbnail {
      * @private
      * @ignore
      */
-    _patch(data: any) {
+    private _patch(data: any) {
         if (!data) data = {};
 
         this.id = data.id || null;
