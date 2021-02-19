@@ -1,10 +1,11 @@
 {
   "name": "youtube-sr",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "Simple package to search videos or channels on YouTube.",
   "main": "build/main.js",
   "types": "build/main.d.ts",
   "scripts": {
+    "build": "rd /s /q build && tsc",
     "test": "cd test && node index.js"
   },
   "repository": {
@@ -30,6 +31,7 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "@types/node": "^14.14.30",
     "@types/node-fetch": "^2.5.7",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"

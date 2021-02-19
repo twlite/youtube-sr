@@ -32,9 +32,16 @@ YouTube.search("indila last dance", { limit: 3 })
 
 # API
 ## search(query, options?)
+Used to search videos/channels/playlists.
+
 ## searchOne(query, options?)
+Similar to search but makes single search.
+
 ## getPlaylist(query, options?)
+Returns playlist info.
+
 ## validate(src, type)
+Used to validate url/id.
 
 ## Response Example
 
@@ -110,6 +117,11 @@ YouTube.search("indila last dance", { limit: 3 })
     }
 ]
 ```
+
+# Similar Packages
+- **[ytsr](https://npmjs.com/package/ytsr)** YouTube Search
+- **[ytpl](https://npmjs.com/package/ytpl)** YouTube Playlist
+- **[ytdl-core](https://npmjs.com/package/ytdl-core)** YouTube Download
 
 # Join my discord server
 **[https://discord.gg/2SUybzb](https://discord.gg/2SUybzb)**

@@ -2,8 +2,8 @@ import Channel from "./Structures/Channel";
 import Playlist from "./Structures/Playlist";
 import Video from "./Structures/Video";
 
-const PLAYLIST_REGEX = /https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41})/;
-const PLAYLIST_ID = /(PL|UU|LL|RD)[a-zA-Z0-9-_]{16,41}/;
+const PLAYLIST_REGEX = /https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})/;
+const PLAYLIST_ID = /(PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;
 const fetch = getFetch();
 
 export interface ParseSearchInterface {
@@ -266,8 +266,7 @@ class Util {
         const data = playlistDetails[0].playlistSidebarPrimaryInfoRenderer;
 
         if (!data.title.runs || !data.title.runs.length) return null;
-
-        const author = playlistDetails[1].playlistSidebarSecondaryInfoRenderer.videoOwner;
+        const author = playlistDetails[1]?.playlistSidebarSecondaryInfoRenderer.videoOwner;
         const views = data.stats.length === 3 ? data.stats[1].simpleText.replace(/[^0-9]/g, "") : 0;
         const lastUpdate = data.stats.length === 3 ? (data.stats[2].runs ? data.stats[2].runs[0].text : data.stats[2].simpleText) : data.stats[1].simpleText;
         const videosCount = data.stats[0].runs[0].text.replace(/[^0-9]/g, "") || 0;
@@ -281,13 +280,13 @@ class Util {
             videos: videos,
             url: `https://www.youtube.com/playlist?list=${data.title.runs[0].navigationEndpoint.watchEndpoint.playlistId}`,
             link: `https://www.youtube.com${data.title.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-            author: {
+            author: author ? {
                 name: author.videoOwnerRenderer.title.runs[0].text,
                 id: author.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.browseId,
                 url: `https://www.youtube.com${author.videoOwnerRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url || author.videoOwnerRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
                 icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails[author.videoOwnerRenderer.thumbnail.thumbnails.length - 1].url : null
-            },
-            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails[data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length - 1].url : null
+            }: {},
+            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails[data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length - 1].url : null
         });
 
         return res;
