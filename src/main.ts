@@ -4,10 +4,13 @@ import Playlist from "./Structures/Playlist";
 import Video from "./Structures/Video";
 import Thumbnail from "./Structures/Thumbnail";
 
+const SAFE_SEARCH_COOKIE = "PREF=f2=8000000";
+
 export interface SearchOptions {
     limit?: number;
     type?: "video" | "channel" | "playlist" | "all";
     requestOptions?: RequestInit;
+    safeSearch?: boolean;
 }
 
 export interface PlaylistOptions {
@@ -28,6 +31,7 @@ class YouTube {
      * @param {number} [options.limit=20] Limit
      * @param {"video"|"channel"|"playlist"|"all"} options.type Type
      * @param {RequestInit} [options.requestOptions] Request options
+     * @param {boolean} [options.safeSearch] Safe search filter
      */
     static async search(query: string, options?: SearchOptions & { type: "video" }): Promise<Video[]>;
     static async search(query: string, options?: SearchOptions & { type: "channel" }): Promise<Channel[]>;
@@ -36,9 +40,12 @@ class YouTube {
     static async search(query: string, options?: SearchOptions): Promise<(Video|Channel|Playlist)[]> {
         if (!options) options = { limit: 20, type: "video", requestOptions: {} };
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
+        options.type = options.type || "video";
         const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
         const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en${filter}`;
-        const html = await Util.getHTML(url, options.requestOptions);
+        const requestOptions = options.safeSearch ? { ...options.requestOptions, headers: { cookie: SAFE_SEARCH_COOKIE } } : {};
+
+        const html = await Util.getHTML(url, requestOptions);
         return Util.parseSearchResult(html, options);
     }
 
@@ -46,16 +53,17 @@ class YouTube {
      * Search one
      * @param {string} query Search query
      * @param {"video"|"channel"|"playlist"|"all"} type Search type
+     * @param {boolean} safeSearch Safe search filter
      * @param {RequestInit} requestOptions Request options
      */
-    static searchOne(query: string, type?: "video", requestOptions?: RequestInit): Promise<Video>;
-    static searchOne(query: string, type?: "channel", requestOptions?: RequestInit): Promise<Channel>;
-    static searchOne(query: string, type?: "playlist", requestOptions?: RequestInit): Promise<Playlist>;
-    static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", requestOptions?: RequestInit): Promise<(Video|Channel|Playlist)> {
+    static searchOne(query: string, type?: "video", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video>;
+    static searchOne(query: string, type?: "channel", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Channel>;
+    static searchOne(query: string, type?: "playlist", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Playlist>;
+    static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", safeSearch?: boolean, requestOptions?: RequestInit): Promise<(Video|Channel|Playlist)> {
         if (!type) type = "video";
         return new Promise((resolve) => {
             // @ts-ignore
-            YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions })
+            YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions, safeSearch: !!safeSearch })
                 .then(res => {
                     if (!res || !res.length) return resolve(null);
                     resolve(res[0]);
@@ -80,11 +88,23 @@ class YouTube {
         url = Util.getPlaylistURL(url);
         const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
 
-        try {
-            return Util.getPlaylist(html, options && options.limit);
-        } catch (e) {
-            throw e;
-        }
+        return Util.getPlaylist(html, options && options.limit);
+    }
+
+    /**
+     * Returns basic video info
+     * @param url Video url to parse
+     * @param requestOptions Request options
+     */
+    static async getVideo(url: string | Video, requestOptions?: RequestInit): Promise<Video> {
+        if (!url) throw new Error("Missing video url");
+        if (url instanceof Video) url = url.url;
+        const isValid = YouTube.validate(url, "VIDEO");
+        if (!isValid) throw new Error("Invalid video url");
+
+        const html = await Util.getHTML(`${url}&hl=en`, requestOptions);
+
+        return Util.getVideo(html);
     }
 
     /**

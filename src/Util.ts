@@ -1,6 +1,7 @@
 import Channel from "./Structures/Channel";
 import Playlist from "./Structures/Playlist";
 import Video from "./Structures/Video";
+import Thumbnail from "./Structures/Thumbnail";
 
 const PLAYLIST_REGEX = /https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})/;
 const PLAYLIST_ID = /(PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;
@@ -290,6 +291,65 @@ class Util {
         });
 
         return res;
+    }
+
+    static getVideo(html: string) {
+        let data;
+
+        try {
+            const parsed = JSON.parse(html.split("var ytInitialData = ")[1].split(";</script>")[0]);
+            data = parsed.contents.twoColumnWatchNextResults.results.results.contents;
+        } catch {
+            throw new Error("Could not parse video metadata!");
+        }
+
+        const raw = {
+            primary: data[0].videoPrimaryInfoRenderer,
+            secondary: data[1].videoSecondaryInfoRenderer
+        };
+
+        let info;
+
+        try {
+            info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";</script>")[0]).videoDetails;
+        } catch {
+            info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";var meta")[0]).videoDetails;
+        }
+
+        info = {
+            ...raw.primary,
+            ...raw.secondary,
+            info
+        };
+
+        const payload = new Video({
+            id: info.info.videoId,
+            title: info.info.title,
+            views: parseInt(info.info.viewCount) || 0,
+            tags: info.info.keywords,
+            private: info.info.isPrivate,
+            live: info.info.isLiveContent,
+            duration: parseInt(info.info.lengthSeconds),
+            channel: {
+                name: info.info.author,
+                id: info.info.channelId,
+                url: `https://www.youtube.com${info.owner.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
+                icon: info.owner.videoOwnerRenderer.thumbnail.thumbnails[0],
+                subscribers: info.owner.videoOwnerRenderer.subscriberCountText.simpleText?.replace(" subscribers", "")
+            },
+            description: info.info.shortDescription,
+            thumbnail: {
+                ...info.info.thumbnail.thumbnails[info.info.thumbnail.thumbnails.length - 1],
+                id: info.info.videoId
+            },
+            uploadedAt: info.dateText.simpleText,
+            ratings: {
+                likes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[0].replace(/,/g, "")),
+                dislikes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[1].replace(/,/g, ""))
+            }
+        });
+
+        return payload;
     }
 
     static getPlaylistURL(url: string): string {

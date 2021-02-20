@@ -12,6 +12,11 @@ class Video {
     thumbnail?: Thumbnail;
     channel?: Channel;
     videos?: Video[];
+    likes: number;
+    dislikes: number;
+    live: boolean;
+    private: boolean;
+    tags: string[];
 
     constructor(data: any) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
@@ -36,6 +41,12 @@ class Video {
         this.views = parseInt(data.views) || 0;
         this.thumbnail = new Thumbnail(data.thumbnail || {});
         this.channel = new Channel(data.channel || {});
+        this.likes = data.ratings?.likes || 0;
+        this.dislikes = data.ratings?.dislikes || 0;
+        this.live = !!data.live;
+        this.private = !!data.private;
+        this.tags = data.tags || [];
+
         if (data.videos) this.videos = data.videos;
     }
 
@@ -88,7 +99,14 @@ class Video {
                 icon: this.channel.iconURL()
             },
             views: this.views,
-            type: this.type
+            type: this.type,
+            tags: this.tags,
+            ratings: {
+                likes: this.likes,
+                dislikes: this.dislikes
+            },
+            live: this.live,
+            private: this.private
         };
     }
 
