@@ -55,6 +55,21 @@ class Playlist {
         yield* this.videos;
     }
 
+    toJSON() {
+        return {
+            id: this.id,
+            title: this.title,
+            thumbnail: this.thumbnail.toJSON(),
+            channel: {
+                name: this.channel.name,
+                id: this.channel.id,
+                icon: this.channel.iconURL()
+            },
+            url: this.url,
+            videos: this.videos
+        };
+    }
+
 }
 
 export default Playlist;

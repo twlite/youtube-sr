@@ -82,7 +82,11 @@ class Video {
             duration_formatted: this.durationFormatted,
             uploadedAt: this.uploadedAt,
             thumbnail: this.thumbnail.toJSON(),
-            channel: this.channel.toJSON(),
+            channel: {
+                name: this.channel.name,
+                id: this.channel.id,
+                icon: this.channel.iconURL()
+            },
             views: this.views,
             type: this.type
         };

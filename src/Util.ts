@@ -305,6 +305,21 @@ class Util {
         throw new Error("Invalid playlist url");
     }
 
+    static filter(ftype: string): string {
+
+        switch(ftype) {
+            case "playlist":
+                return "EgIQAw%253D%253D";
+            case "video":
+                return "EgIQAQ%253D%253D";
+            case "channel":
+                return "EgIQAg%253D%253D";
+            default:
+                throw new TypeError(`Invalid filter type "${ftype}"!`);
+        }
+
+    }
+
 }
 
 export default Util;

@@ -36,7 +36,8 @@ class YouTube {
     static async search(query: string, options?: SearchOptions): Promise<(Video|Channel|Playlist)[]> {
         if (!options) options = { limit: 20, type: "video", requestOptions: {} };
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
-        const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en`;
+        const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
+        const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en${filter}`;
         const html = await Util.getHTML(url, options.requestOptions);
         return Util.parseSearchResult(html, options);
     }
@@ -59,7 +60,7 @@ class YouTube {
                     if (!res || !res.length) return resolve(null);
                     resolve(res[0]);
                 })
-                .catch(e => {
+                .catch(() => {
                     resolve(null);
                 });
         });
