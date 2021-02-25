@@ -1,6 +1,13 @@
 # YouTube Search
 Simple package to search videos or channels on YouTube.
 
+# Features
+- Easy
+- Simple
+- Fast
+- Both scraper & api support
+- Single api for scraper & api methods
+
 # Installation
 ## Node
 > Minimum node version required to run this library is v14.x
@@ -15,15 +22,9 @@ const YouTube = require("youtube-sr").default;
 
 -------------------------------------------------------------------------------------------------
 
-## Deno
-
-```js
-import YouTube from "https://deno.land/x/youtube_sr/mod.ts";
-```
-
--------------------------------------------------------------------------------------------------
-
 # Example
+
+> Note: Data might be different for API search & Scraper Search
 
 ## Search
 
@@ -37,6 +38,18 @@ YouTube.search("indila last dance", { limit: 3 })
 
 ```js
 YouTube.search("indila last dance", { limit: 3, safeSearch: true })
+    .then(x => console.log(x))
+    .catch(console.error);
+```
+
+## API method
+
+```js
+// This is how you enable API mode. If you want to disable API mode, set api to false or use YouTube.delete("api")
+YouTube.set("api", "YOUR_YOUTUBE_API_KEY");
+
+// regular method
+YouTube.search("indila last dance", { limit: 3 })
     .then(x => console.log(x))
     .catch(console.error);
 ```
@@ -152,6 +165,7 @@ Used to validate url/id.
 - **[ytsr](https://npmjs.com/package/ytsr)** YouTube Search
 - **[ytpl](https://npmjs.com/package/ytpl)** YouTube Playlist
 - **[ytdl-core](https://npmjs.com/package/ytdl-core)** YouTube Download
+- **[simple-youtube-api](https://npmjs.com/package/simple-youtube-api)** YouTube API wrapper
 
 # Join my discord server
 **[https://discord.gg/2SUybzb](https://discord.gg/2SUybzb)**

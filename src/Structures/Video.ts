@@ -36,7 +36,7 @@ class Video {
         this.title = data.title || null;
         this.description = data.description || null;
         this.durationFormatted = data.duration_raw || "0:00";
-        this.duration = data.duration || 0;
+        this.duration = (data.duration < 0 ? 0 : data.duration) || 0;
         this.uploadedAt = data.uploadedAt || null;
         this.views = parseInt(data.views) || 0;
         this.thumbnail = new Thumbnail(data.thumbnail || {});
