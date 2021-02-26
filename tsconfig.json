@@ -9,5 +9,5 @@
 		"outDir": "./build/",
 		"rootDir": "./src/",
 	},
-	"exclude": ["node_modules", "deno", "test"]
+	"exclude": ["node_modules", "deno", "dev"]
 }

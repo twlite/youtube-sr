@@ -71,7 +71,7 @@ class YouTube {
                             title: item.title,
                             url: item.url,
                             description: item.description,
-                            duration: item.durationSeconds * 1000,
+                            duration: item.durationSeconds,
                             duration_raw: typeof item.duration === "object" ? Object.values(item.duration).join(":").replace(/0:/g, "") : null,
                             thumbnail: {
                                 id: item.id,
@@ -106,7 +106,7 @@ class YouTube {
                                 title: m.title,
                                 url: m.url,
                                 description: m.description,
-                                duration: m.durationSeconds * 1000,
+                                duration: m.durationSeconds,
                                 duration_raw: typeof item.duration === "object" ? Object.values(item.duration).join(":").replace(/0:/g, "") : null,
                                 thumbnail: {
                                     id: m.id,
@@ -231,7 +231,7 @@ class YouTube {
                     title: m.title,
                     url: m.url,
                     description: m.description,
-                    duration: m.durationSeconds * 1000,
+                    duration: m.durationSeconds,
                     duration_raw: typeof item.duration === "object" ? Object.values(item.duration).join(":").replace(/0:/g, "") : null,
                     thumbnail: {
                         id: m.id,
@@ -357,12 +357,17 @@ class YouTube {
         }
     }
 
+    static isPlaylist(src: string) {
+        if (typeof src !== "string" || !src) return false;
+        return !!((YouTube.Regex.VIDEO_URL.test(src) && YouTube.Regex.PLAYLIST_ID.test(src)) || (YouTube.Regex.PLAYLIST_URL.test(src) && YouTube.Regex.PLAYLIST_ID.test(src)) || /^(PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}$/.test(src));
+    }
+
     static get Regex() {
         return {
             PLAYLIST_URL: Util.PlaylistURLRegex,
             PLAYLIST_ID: Util.PlaylistIDRegex,
-            VIDEO_ID: /^[a-zA-Z0-9-_]{11}$/,
-            VIDEO_URL: /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
+            VIDEO_ID: Util.VideoIDRegex,
+            VIDEO_URL: Util.VideoRegex
         };
     }
 

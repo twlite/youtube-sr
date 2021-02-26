@@ -1,6 +1,8 @@
 node_modules/
 package-lock.json
 yarn.lock
-test/
+dev/
 build/
 deno/
+__tests__
+jest.config.js

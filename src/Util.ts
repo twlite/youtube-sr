@@ -1,10 +1,11 @@
 import Channel from "./Structures/Channel";
 import Playlist from "./Structures/Playlist";
 import Video from "./Structures/Video";
-import Thumbnail from "./Structures/Thumbnail";
 
-const PLAYLIST_REGEX = /https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})/;
+const PLAYLIST_REGEX = /^https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})$/;
 const PLAYLIST_ID = /(PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;
+const VIDEO_URL = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
+const VIDEO_ID = /^[a-zA-Z0-9-_]{11}$/;
 const fetch = getFetch();
 
 export interface ParseSearchInterface {
@@ -22,6 +23,14 @@ class Util {
 
     constructor() {
         throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
+    }
+
+    static get VideoRegex(): RegExp {
+        return VIDEO_URL;
+    }
+
+    static get VideoIDRegex(): RegExp {
+        return VIDEO_ID;
     }
 
     /**

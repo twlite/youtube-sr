@@ -1,2 +1,6 @@
 deno/
 src/
+dev/
+test/
+__tests__
+jest.config.js
