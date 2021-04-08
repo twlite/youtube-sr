@@ -6,3 +6,4 @@ build/
 deno/
 __tests__
 jest.config.js
+.vscode/

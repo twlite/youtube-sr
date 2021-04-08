@@ -1,12 +1,12 @@
 {
   "name": "youtube-sr",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "Simple package to search videos or channels on YouTube.",
   "main": "build/main.js",
   "types": "build/main.d.ts",
   "scripts": {
     "build": "rd /s /q build && tsc",
-    "dev": "cd demo && node index.js",
+    "dev": "cd dev && node index.js",
     "test": "jest"
   },
   "repository": {

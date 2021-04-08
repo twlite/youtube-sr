@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
-		"target": "ES2020",
+		"target": "ES6",
 		"declaration": true,
 		"strict": true,
 		"strictNullChecks": false,

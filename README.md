@@ -10,7 +10,6 @@ Simple package to search videos or channels on YouTube.
 
 # Installation
 ## Node
-> Minimum node version required to run this library is v14.x
 
 ```sh
 $ npm i youtube-sr
