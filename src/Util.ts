@@ -339,6 +339,7 @@ class Util {
             private: info.info.isPrivate,
             live: info.info.isLiveContent,
             duration: parseInt(info.info.lengthSeconds),
+            duration_raw: Util.durationString(Util.parseMS(parseInt(info.info.lengthSeconds) * 1000 || 0)),
             channel: {
                 name: info.info.author,
                 id: info.info.channelId,
@@ -387,6 +388,29 @@ class Util {
                 throw new TypeError(`Invalid filter type "${ftype}"!`);
         }
 
+    }
+
+    static parseMS(milliseconds: number) {
+        const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
+
+        return {
+            days: roundTowardsZero(milliseconds / 86400000),
+            hours: roundTowardsZero(milliseconds / 3600000) % 24,
+            minutes: roundTowardsZero(milliseconds / 60000) % 60,
+            seconds: roundTowardsZero(milliseconds / 1000) % 60
+        };
+    }
+
+    static durationString(data: any): string {
+        const items = Object.keys(data);
+        const required = ['days', 'hours', 'minutes', 'seconds'];
+
+        const parsed = items.filter((x) => required.includes(x)).map((m) => (data[m] > 0 ? data[m] : ''));
+        const final = parsed
+            .filter((x) => !!x)
+            .map((x) => x.toString().padStart(2, '0'))
+            .join(':');
+        return final.length <= 3 ? `0:${final.padStart(2, '0') || 0}` : final;
     }
 
 }

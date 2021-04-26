@@ -6,7 +6,7 @@ Simple package to search videos or channels on YouTube.
 - Simple
 - Fast
 - Both scraper & api support
-- Single api for scraper & api methods
+- Single api for both scraper & api methods
 
 # Installation
 ## Node
@@ -161,6 +161,7 @@ Used to validate url/id.
 ```
 
 # Similar Packages
+- **[youtube-ext](https://npmjs.com/package/youtube-ext)** YouTube Download, YouTube Search
 - **[ytsr](https://npmjs.com/package/ytsr)** YouTube Search
 - **[ytpl](https://npmjs.com/package/ytpl)** YouTube Playlist
 - **[ytdl-core](https://npmjs.com/package/ytdl-core)** YouTube Download

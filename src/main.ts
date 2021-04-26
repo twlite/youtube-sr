@@ -1,3 +1,8 @@
+/**
+ * YouTube Search
+ * @author Snowflake107
+ */
+
 import Util from "./Util";
 import Channel from "./Structures/Channel";
 import Playlist from "./Structures/Playlist";
@@ -309,7 +314,7 @@ class YouTube {
                 title: item.title,
                 url: item.url,
                 description: item.description,
-                duration: item.durationSeconds * 1000,
+                duration: item.durationSeconds,
                 duration_raw: typeof item.duration === "object" ? Object.values(item.duration).join(":").replace(/0:/g, "") : null,
                 thumbnail: {
                     id: item.id,

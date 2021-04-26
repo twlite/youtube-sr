@@ -1,13 +1,15 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
 		"target": "ES6",
+		"module": "commonjs",
 		"declaration": true,
+		"outDir": "./build",
 		"strict": true,
 		"strictNullChecks": false,
-		"esModuleInterop": true,
-		"outDir": "./build/",
-		"rootDir": "./src/",
+		"esModuleInterop": true
 	},
-	"exclude": ["node_modules", "deno", "dev"]
+	"include": [
+		"src/**/*"
+	],
+	"exclude": ["node_modules", "deno", "dev"],
 }
