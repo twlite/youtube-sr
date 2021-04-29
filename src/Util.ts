@@ -221,7 +221,12 @@ class Util {
         const res = new Playlist({
             id: data.playlistRenderer.playlistId,
             title: data.playlistRenderer.title.simpleText,
-            thumbnail: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].url,
+            thumbnail: {
+                id: data.playlistRenderer.playlistId,
+                url: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].url,
+                height: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].height,
+                width: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].width,
+            },
             channel: {
                 id: data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId,
                 name: data.playlistRenderer.shortBylineText.runs[0].text,
