@@ -1,6 +1,9 @@
+.vscode/
 deno/
 src/
 dev/
 test/
 __tests__
 jest.config.js
+benchmark
+tsconfig.json
