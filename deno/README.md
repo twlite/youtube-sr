@@ -1,27 +1,19 @@
 # YouTube Search
 Simple package to search videos or channels on YouTube.
 
+# Features
+- Easy
+- Simple
+- Fast
+
 # Installation
-## Node
-> Minimum node version required to run this library is v14.x
-
-```sh
-$ npm i youtube-sr
-```
-
-```js
-const YouTube = require("youtube-sr").default;
-```
-
--------------------------------------------------------------------------------------------------
-
 ## Deno
 
 ```js
 import YouTube from "https://deno.land/x/youtube_sr/mod.ts";
 ```
-
 -------------------------------------------------------------------------------------------------
+
 
 # Example
 ## Search
@@ -148,6 +140,7 @@ Used to validate url/id.
 ```
 
 # Similar Packages
+- **[youtube-ext](https://npmjs.com/package/youtube-ext)** YouTube Download, YouTube Search
 - **[ytsr](https://npmjs.com/package/ytsr)** YouTube Search
 - **[ytpl](https://npmjs.com/package/ytpl)** YouTube Playlist
 - **[ytdl-core](https://npmjs.com/package/ytdl-core)** YouTube Download

@@ -14,7 +14,7 @@ export interface ParseSearchInterface {
     requestOptions?: RequestInit;
 }
 
-function getFetch() {
+function getFetch(): typeof window.fetch {
     if (typeof window !== "undefined") return window.fetch;
     return require("node-fetch");
 }
@@ -376,7 +376,7 @@ class Util {
     }
 
     static validatePlaylist(url: string): void {
-        if (typeof url === "string" && !!(PLAYLIST_REGEX.test(url) || PLAYLIST_ID.test(url))) return;
+        if (typeof url === "string" && url.match(PLAYLIST_ID) !== null) return;
         throw new Error("Invalid playlist url");
     }
 

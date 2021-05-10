@@ -9,12 +9,7 @@ import Playlist from "./Structures/Playlist";
 import Video from "./Structures/Video";
 import Thumbnail from "./Structures/Thumbnail";
 
-// @ts-ignore
-import YouTubeAPI from "simple-youtube-api";
-
 const SAFE_SEARCH_COOKIE = "PREF=f2=8000000";
-const conditions = new Map<string, any>();
-let yt: any;
 
 export interface SearchOptions {
     limit?: number;
@@ -52,132 +47,12 @@ class YouTube {
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
         options.type = options.type || "video";
         
-        if (!YouTube.get("api")) {
-            const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
-            const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en${filter}`;
-            const requestOptions = options.safeSearch ? { ...options.requestOptions, headers: { cookie: SAFE_SEARCH_COOKIE } } : {};
+        const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
+        const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en${filter}`;
+        const requestOptions = options.safeSearch ? { ...options.requestOptions, headers: { cookie: SAFE_SEARCH_COOKIE } } : {};
 
-            const html = await Util.getHTML(url, requestOptions);
-            return Util.parseSearchResult(html, options);
-        } else {
-            if (!yt) yt = new YouTubeAPI(YouTube.get("api"));
-            const result = await yt.search(query.trim(), options.limit, { type: options.type });
-            if (!result || !result.length) return [];
-            let data = [];
-
-            for (const item of result) {
-                switch (item.type) {
-                    case "video":
-                        await item.fetch().catch(() => {});
-                        await item.channel.fetch().catch(() => { });
-
-                        data.push(new Video({
-                            id: item.id,
-                            title: item.title,
-                            url: item.url,
-                            description: item.description,
-                            duration: item.durationSeconds,
-                            duration_raw: typeof item.duration === "object" ? Object.values(item.duration).join(":").replace(/0:/g, "") : null,
-                            thumbnail: {
-                                id: item.id,
-                                url: item.maxRes.url,
-                                width: item.maxRes.width,
-                                height: item.maxRes.height
-                            },
-                            channel: {
-                                id: item.channel.id,
-                                name: item.channel.title,
-                                url: item.channel.url,
-                                icon: {
-                                    url: item.channel.thumbnails?.default.url,
-                                    width: item.channel.thumbnails?.default.width,
-                                    height: item.channel.thumbnails?.default.height
-                                },
-                                verified: false
-                            },
-                            uploadedAt: item.publishedAt.toString(),
-                            views: (typeof item.views === "number" ? item.views : 0) ?? 0
-                        }));
-                        break;
-                    case "playlist":
-                        await item.fetch().catch(() => {});
-                        await item.channel.fetch().catch(() => { });
-                        let vy = await item.getVideos();
-                        await vy.channel.fetch().catch(() => { });
-
-                        vy = vy.map((m: any) => {
-                            return new Video({
-                                id: m.id,
-                                title: m.title,
-                                url: m.url,
-                                description: m.description,
-                                duration: m.durationSeconds,
-                                duration_raw: typeof item.duration === "object" ? Object.values(item.duration).join(":").replace(/0:/g, "") : null,
-                                thumbnail: {
-                                    id: m.id,
-                                    url: m.maxRes.url,
-                                    width: m.maxRes.width,
-                                    height: m.maxRes.height
-                                },
-                                channel: {
-                                    id: m.channel.id,
-                                    name: m.channel.title,
-                                    url: m.channel.url,
-                                    icon: {
-                                        url: m.channel.thumbnails?.default.url,
-                                        width: m.channel.thumbnails?.default.width,
-                                        height: m.channel.thumbnails?.default.height
-                                    },
-                                    verified: false
-                                },
-                                uploadedAt: m.publishedAt.toString(),
-                                views: (typeof m.views === "number" ? item.views : 0) ?? 0
-                            })
-                        });
-
-                        let pl = new Playlist({
-                            id: item.id,
-                            videoCount: item.length,
-                            lastUpdate: item.publishedAt.toString(),
-                            views: 0,
-                            videos: vy,
-                            url: item.url,
-                            link: item.url,
-                            author: {
-                                id: item.channel.id,
-                                name: item.channel.title,
-                                url: item.channel.url,
-                                icon: {
-                                    url: item.channel.thumbnails?.default.url,
-                                    width: item.channel.thumbnails?.default.width,
-                                    height: item.channel.thumbnails?.default.height
-                                },
-                                verified: false
-                            },
-                            thumbnail: item.thumbnails.maxres.url
-                        });
-
-                        data.push(pl);
-                        break;
-                    case "channel":
-                        await item.fetch().catch(() => { });
-                        data.push(new Channel({
-                            id: item.id,
-                            name: item.title,
-                            url: item.url,
-                            icon: {
-                                url: item.thumbnails?.default.url,
-                                width: item.thumbnails?.default.width,
-                                height: item.thumbnails?.default.height
-                            },
-                            verified: false
-                        }));
-                        break;
-                }
-            }
-
-            return data;
-        }
+        const html = await Util.getHTML(url, requestOptions);
+        return Util.parseSearchResult(html, options);
     }
 
     /**
@@ -218,73 +93,8 @@ class YouTube {
         Util.validatePlaylist(url);
         url = Util.getPlaylistURL(url);
         
-        if (!YouTube.get("api")) {
-            const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
-
-            return Util.getPlaylist(html, options && options.limit);
-        } else {
-            if (!yt) yt = new YouTubeAPI(YouTube.get("api"));
-            const item = await yt.getPlaylist(url);
-            await item.fetch().catch(() => { });
-            await item.channel.fetch().catch(() => { });
-            let vy = await item.getVideos(options.limit);
-            await vy.channel.fetch().catch(() => { });
-
-            vy = vy.map((m: any) => {
-                return new Video({
-                    id: m.id,
-                    title: m.title,
-                    url: m.url,
-                    description: m.description,
-                    duration: m.durationSeconds,
-                    duration_raw: typeof item.duration === "object" ? Object.values(item.duration).join(":").replace(/0:/g, "") : null,
-                    thumbnail: {
-                        id: m.id,
-                        url: m.maxRes.url,
-                        width: m.maxRes.width,
-                        height: m.maxRes.height
-                    },
-                    channel: {
-                        id: m.channel.id,
-                        name: m.channel.title,
-                        url: m.channel.url,
-                        icon: {
-                            url: m.channel.thumbnails?.default.url,
-                            width: m.channel.thumbnails?.default.width,
-                            height: m.channel.thumbnails?.default.height
-                        },
-                        verified: false
-                    },
-                    uploadedAt: m.publishedAt.toString(),
-                    views: (typeof m.views === "number" ? item.views : 0) ?? 0
-                })
-            });
-
-            let pl = new Playlist({
-                title: item.title,
-                id: item.id,
-                videoCount: item.length,
-                lastUpdate: item.publishedAt.toString(),
-                views: 0,
-                videos: vy,
-                url: item.url,
-                link: item.url,
-                author: {
-                    id: item.channel.id,
-                    name: item.channel.title,
-                    url: item.channel.url,
-                    icon: {
-                        url: item.channel.thumbnails?.default.url,
-                        width: item.channel.thumbnails?.default.width,
-                        height: item.channel.thumbnails?.default.height
-                    },
-                    verified: false
-                },
-                thumbnail: item.thumbnails.maxres.url
-            });
-
-            return pl;
-        }
+        const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
+        return Util.getPlaylist(html, options && options.limit);
     }
 
     /**
@@ -298,45 +108,8 @@ class YouTube {
         const isValid = YouTube.validate(url, "VIDEO");
         if (!isValid) throw new Error("Invalid video url");
 
-        if (!YouTube.get("api")) {
-            const html = await Util.getHTML(`${url}&hl=en`, requestOptions);
-
-            return Util.getVideo(html);
-        } else {
-            if (!yt) yt = new YouTubeAPI(YouTube.get("api"));
-            const item = await yt.getVideo(url);
-            if (!item) throw new Error("Could not parse video")
-            await item.fetch().catch(() => { });
-            await item.channel.fetch().catch(() => {});
-            
-            return new Video({
-                id: item.id,
-                title: item.title,
-                url: item.url,
-                description: item.description,
-                duration: item.durationSeconds,
-                duration_raw: typeof item.duration === "object" ? Object.values(item.duration).join(":").replace(/0:/g, "") : null,
-                thumbnail: {
-                    id: item.id,
-                    url: item.maxRes.url,
-                    width: item.maxRes.width,
-                    height: item.maxRes.height
-                },
-                channel: {
-                    id: item.channel.id,
-                    name: item.channel.title,
-                    url: item.channel.url,
-                    icon: {
-                        url: item.channel.thumbnails?.default.url,
-                        width: item.channel.thumbnails?.default.width,
-                        height: item.channel.thumbnails?.default.height
-                    },
-                    verified: false
-                },
-                uploadedAt: item.publishedAt.toString(),
-                views: (typeof item.views === "number" ? item.views : 0) ?? 0
-            });
-        }
+        const html = await Util.getHTML(`${url}&hl=en`, requestOptions);
+        return Util.getVideo(html);
     }
 
     /**
@@ -363,8 +136,12 @@ class YouTube {
     }
 
     static isPlaylist(src: string) {
-        if (typeof src !== "string" || !src) return false;
-        return !!((YouTube.Regex.VIDEO_URL.test(src) && YouTube.Regex.PLAYLIST_ID.test(src)) || (YouTube.Regex.PLAYLIST_URL.test(src) && YouTube.Regex.PLAYLIST_ID.test(src)) || /^(PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}$/.test(src));
+        try {
+            Util.validatePlaylist(src);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     static get Regex() {
@@ -374,25 +151,6 @@ class YouTube {
             VIDEO_ID: Util.VideoIDRegex,
             VIDEO_URL: Util.VideoRegex
         };
-    }
-
-    static set(rx: string, ry: any): void {
-        conditions.set(rx, ry);
-        if (rx === "api" && !ry) yt = undefined;
-        if (ry) yt = new YouTubeAPI(ry);
-    }
-
-    static get(rx: string) {
-        return conditions.get(rx);
-    }
-
-    static has(rx: string) {
-        return conditions.has(rx);
-    }
-
-    static delete(rx: string) {
-        yt = undefined;
-        return conditions.delete(rx);
     }
 }
 
