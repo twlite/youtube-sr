@@ -49,7 +49,7 @@ class YouTube {
         
         const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
 
-        const url = `https://youtube.com/results?q=${encodeURI(query.trim()).replace(/%20/g, '+')}&hl=en${filter}`;
+        const url = `https://youtube.com/results?q=${encodeURIComponent(query.trim()).replace(/%20/g, '+')}&hl=en${filter}`;
         const requestOptions = options.safeSearch ? { ...options.requestOptions, headers: { cookie: SAFE_SEARCH_COOKIE } } : {};
 
         const html = await Util.getHTML(url, requestOptions);
