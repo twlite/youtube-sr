@@ -48,7 +48,7 @@ class YouTube {
         options.type = options.type || "video";
         
         const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
-        const url = `https://youtube.com/results?q=${encodeURI(query.trim())}&hl=en${filter}`;
+        const url = `https://youtube.com/results?q=${query.trim().replace(/ /g, '+')}&hl=en${filter}`;
         const requestOptions = options.safeSearch ? { ...options.requestOptions, headers: { cookie: SAFE_SEARCH_COOKIE } } : {};
 
         const html = await Util.getHTML(url, requestOptions);
