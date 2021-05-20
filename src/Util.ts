@@ -15,7 +15,10 @@ export interface ParseSearchInterface {
 }
 
 function getFetch(): typeof window.fetch {
+    // browser/deno
     if (typeof window !== "undefined") return window.fetch;
+
+    // node
     return require("node-fetch");
 }
 
@@ -59,9 +62,8 @@ class Util {
         if (!requestOptions) requestOptions = {};
 
         return new Promise((resolve, reject) => {
-            const prop = typeof window === "undefined" ? requestOptions : Object.defineProperty(requestOptions, "mode", { value: "no-cors" });
-            fetch(url, prop)
-                .then((res: any) => res.text())
+            fetch(url, requestOptions)
+                .then((res: Response) => res.text())
                 .then((html: string) => resolve(html))
                 .catch((e: Error) => reject(e));
         });
@@ -109,18 +111,18 @@ class Util {
             html = data.replace(/\\x([0-9A-F]{2})/ig, (...items) => {
                 return String.fromCharCode(parseInt(items[1], 16));
             });
-        } catch (e) { /* do nothing */ }
+        } catch { /* do nothing */ }
 
         try {
             details = JSON.parse(html.split('{"itemSectionRenderer":{"contents":')[html.split('{"itemSectionRenderer":{"contents":').length - 1].split(',"continuations":[{')[0]);
             fetched = true;
-        } catch (e) { /* do nothing */ }
+        } catch { /* do nothing */ }
 
         if (!fetched) {
             try {
                 details = JSON.parse(html.split('{"itemSectionRenderer":')[html.split('{"itemSectionRenderer":').length - 1].split('},{"continuationItemRenderer":{')[0]).contents;
                 fetched = true;
-            } catch (e) { /* do nothing */ }
+            } catch { /* do nothing */ }
         }
 
         if (!fetched) return [];
@@ -169,7 +171,7 @@ class Util {
             name: data.channelRenderer.title.simpleText,
             icon: data.channelRenderer.thumbnail.thumbnails[data.channelRenderer.thumbnail.thumbnails.length - 1],
             url: url,
-            verified: badge && badge.metadataBadgeRenderer && badge.metadataBadgeRenderer.style && badge.metadataBadgeRenderer.style.toLowerCase().includes("verified"),
+            verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified")),
             subscribers: data.channelRenderer.subscriberCountText.simpleText
         });
 
@@ -206,10 +208,10 @@ class Util {
                     width: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].width,
                     height: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].height
                 },
-                verified: badge && badge.metadataBadgeRenderer && badge.metadataBadgeRenderer.style && badge.metadataBadgeRenderer.style.toLowerCase().includes("verified")
+                verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified"))
             },
-            uploadedAt: data.videoRenderer.publishedTimeText ? data.videoRenderer.publishedTimeText.simpleText : null,
-            views: data.videoRenderer.viewCountText && data.videoRenderer.viewCountText.simpleText ? data.videoRenderer.viewCountText.simpleText.replace(/[^0-9]/g, "") : 0
+            uploadedAt: data.videoRenderer.publishedTimeText?.simpleText ?? null,
+            views: data.videoRenderer.viewCountText?.simpleText?.replace(/[^0-9]/g, "") ?? 0
         });
 
         return res;

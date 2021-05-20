@@ -6,6 +6,11 @@ Simple package to search videos or channels on YouTube.
 - Simple
 - Fast
 
+# Limits
+- search results are around 20-25
+- Playlists cannot have more than 100 items
+- limited filters
+
 # Installation
 ## Node
 

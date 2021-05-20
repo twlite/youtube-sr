@@ -63,14 +63,14 @@ class YouTube {
      * @param {boolean} safeSearch Safe search filter
      * @param {RequestInit} requestOptions Request options
      */
-    static searchOne(query: string, type?: "video", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video>;
-    static searchOne(query: string, type?: "channel", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Channel>;
-    static searchOne(query: string, type?: "playlist", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Playlist>;
+    static searchOne(query: string, type: "video", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video>;
+    static searchOne(query: string, type: "channel", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Channel>;
+    static searchOne(query: string, type: "playlist", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Playlist>;
     static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", safeSearch?: boolean, requestOptions?: RequestInit): Promise<(Video|Channel|Playlist)> {
         if (!type) type = "video";
         return new Promise((resolve) => {
             // @ts-ignore
-            YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions, safeSearch: !!safeSearch })
+            YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions, safeSearch: Boolean(safeSearch) })
                 .then(res => {
                     if (!res || !res.length) return resolve(null);
                     resolve(res[0]);
