@@ -310,11 +310,15 @@ class Util {
     }
 
     static getVideo(html: string) {
-        let data;
+        let data, nextData = [];
 
         try {
             const parsed = JSON.parse(html.split("var ytInitialData = ")[1].split(";</script>")[0]);
             data = parsed.contents.twoColumnWatchNextResults.results.results.contents;
+            
+            try {
+                nextData = parsed.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results;
+            } catch {}
         } catch {
             throw new Error("Could not parse video metadata!");
         }
@@ -363,10 +367,58 @@ class Util {
             ratings: {
                 likes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[0].replace(/,/g, "")),
                 dislikes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[1].replace(/,/g, ""))
-            }
+            },
+            videos: Util.getNext(nextData)
         });
 
         return payload;
+    }
+
+    static getNext(body: any): Video[] {
+        const results = [];
+
+        for (const result of body) {
+            const details = result.compactVideoRenderer;
+
+            if (details) {
+                try {
+                    let viewCount = details.viewCountText.simpleText;
+                    viewCount = (/^\d/.test(viewCount) ? viewCount : "0").split(" ")[0];
+
+                    results.push(
+                        new Video({
+                            id: details.videoId,
+                            title: details.title.simpleText,
+                            views: parseInt(viewCount.replace(/,/g, '')) || 0,
+                            duration_raw: details.lengthText.simpleText ?? details.lengthText.accessibility.accessibilityData.label,
+                            duration: Util.parseDuration(details.lengthText.simpleText) / 1000,
+                            channel: {
+                                name: details.shortBylineText.runs[0].text,
+                                id: details.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId,
+                                url: `https://www.youtube.com${details.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
+                                icon: details.channelThumbnail.thumbnails[0],
+                                subscribers: "0",
+                                verified: Boolean(details.ownerBadges[0].metadataBadgeRenderer.tooltip === "Verified")
+                            },
+                            thumbnail: {
+                                ...details.thumbnail.thumbnails[details.thumbnail.thumbnails.length - 1],
+                                id: details.videoId
+                            },
+                            uploadedAt: details.publishedTimeText.simpleText,
+                            ratings: {
+                                likes: 0,
+                                dislikes: 0
+                            }
+                        })
+                    );
+                } catch {
+                    continue;
+                }
+            
+            }
+        }
+
+        return results;
     }
 
     static getPlaylistURL(url: string): string {

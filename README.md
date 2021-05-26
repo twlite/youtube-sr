@@ -1,5 +1,5 @@
 # YouTube Search
-Simple package to search videos or channels on YouTube.
+Simple package to make YouTube search.
 
 # Features
 - Easy

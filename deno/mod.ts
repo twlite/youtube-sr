@@ -1,4 +1,4 @@
-import YouTube from "https://cdn.skypack.dev/youtube-sr?dts";
+import { YouTube, Video, Channel, Playlist, Thumbnail, Util } from "https://cdn.skypack.dev/youtube-sr?dts";
 
-export { YouTube };
+export { YouTube, Video, Channel, Playlist, Thumbnail, Util };
 export default YouTube;

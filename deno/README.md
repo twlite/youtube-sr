@@ -1,19 +1,34 @@
 # YouTube Search
-Simple package to search videos or channels on YouTube.
+Simple package to make YouTube search.
 
 # Features
 - Easy
 - Simple
 - Fast
 
+# Limits
+- search results are around 20-25
+- Playlists cannot have more than 100 items
+- limited filters
+
 # Installation
+## Node
+
+```sh
+$ npm i youtube-sr
+```
+
+```js
+const YouTube = require("youtube-sr").default;
+```
+
+-------------------------------------------------------------------------------------------------
 ## Deno
 
 ```js
 import YouTube from "https://deno.land/x/youtube_sr/mod.ts";
 ```
 -------------------------------------------------------------------------------------------------
-
 
 # Example
 ## Search

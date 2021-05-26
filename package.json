@@ -1,7 +1,7 @@
 {
   "name": "youtube-sr",
-  "version": "4.0.8",
-  "description": "Simple package to search videos or channels on YouTube.",
+  "version": "4.0.9",
+  "description": "Simple package to make YouTube search.",
   "files": [
     "build"
   ],
@@ -43,11 +43,11 @@
   },
   "homepage": "https://github.com/DevSnowflake/youtube-sr#readme",
   "dependencies": {
-    "@types/node-fetch": "^2.5.10",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/node": "^15.0.2",
+    "@types/node-fetch": "^2.5.10",
     "typescript": "^4.1.3",
     "youtube-ext": "^1.0.9",
     "ytdl-core": "^4.5.0",
