@@ -7,6 +7,7 @@ const PLAYLIST_ID = /(PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;
 const VIDEO_URL = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
 const VIDEO_ID = /^[a-zA-Z0-9-_]{11}$/;
 const fetch = getFetch();
+const DEFAULT_API_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
 
 export interface ParseSearchInterface {
     type?: "video" | "playlist" | "channel" | "all";
@@ -23,7 +24,6 @@ function getFetch(): typeof window.fetch {
 }
 
 class Util {
-
     constructor() {
         throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
     }
@@ -58,7 +58,7 @@ class Util {
      * @param {RequestInit} [requestOptions] Request Options
      * @returns {Promise<string>}
      */
-    static getHTML(url:string, requestOptions?: RequestInit): Promise<string> {
+    static getHTML(url: string, requestOptions?: RequestInit): Promise<string> {
         if (!requestOptions) requestOptions = {};
 
         return new Promise((resolve, reject) => {
@@ -108,21 +108,27 @@ class Util {
         // try to parse html
         try {
             let data = html.split("ytInitialData = JSON.parse('")[1].split("');</script>")[0];
-            html = data.replace(/\\x([0-9A-F]{2})/ig, (...items) => {
+            html = data.replace(/\\x([0-9A-F]{2})/gi, (...items) => {
                 return String.fromCharCode(parseInt(items[1], 16));
             });
-        } catch { /* do nothing */ }
+        } catch {
+            /* do nothing */
+        }
 
         try {
             details = JSON.parse(html.split('{"itemSectionRenderer":{"contents":')[html.split('{"itemSectionRenderer":{"contents":').length - 1].split(',"continuations":[{')[0]);
             fetched = true;
-        } catch { /* do nothing */ }
+        } catch {
+            /* do nothing */
+        }
 
         if (!fetched) {
             try {
                 details = JSON.parse(html.split('{"itemSectionRenderer":')[html.split('{"itemSectionRenderer":').length - 1].split('},{"continuationItemRenderer":{')[0]).contents;
                 fetched = true;
-            } catch { /* do nothing */ }
+            } catch {
+                /* do nothing */
+            }
         }
 
         if (!fetched) return [];
@@ -172,7 +178,7 @@ class Util {
             icon: data.channelRenderer.thumbnail.thumbnails[data.channelRenderer.thumbnail.thumbnails.length - 1],
             url: url,
             verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified")),
-            subscribers: data.channelRenderer.subscriberCountText.simpleText
+            subscribers: data.channelRenderer.subscriberCountText.simpleText,
         });
 
         return res;
@@ -197,7 +203,7 @@ class Util {
                 id: data.videoRenderer.videoId,
                 url: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].url,
                 height: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].height,
-                width: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].width
+                width: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].width,
             },
             channel: {
                 id: data.videoRenderer.ownerText.runs[0].navigationEndpoint.browseEndpoint.browseId || null,
@@ -206,12 +212,12 @@ class Util {
                 icon: {
                     url: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].url,
                     width: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].width,
-                    height: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].height
+                    height: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].height,
                 },
-                verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified"))
+                verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified")),
             },
             uploadedAt: data.videoRenderer.publishedTimeText?.simpleText ?? null,
-            views: data.videoRenderer.viewCountText?.simpleText?.replace(/[^0-9]/g, "") ?? 0
+            views: data.videoRenderer.viewCountText?.simpleText?.replace(/[^0-9]/g, "") ?? 0,
         });
 
         return res;
@@ -220,65 +226,77 @@ class Util {
     static parsePlaylist(data?: any): Playlist {
         if (!data.playlistRenderer) return;
 
-        const res = new Playlist({
-            id: data.playlistRenderer.playlistId,
-            title: data.playlistRenderer.title.simpleText,
-            thumbnail: {
+        const res = new Playlist(
+            {
                 id: data.playlistRenderer.playlistId,
-                url: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].url,
-                height: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].height,
-                width: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].width,
+                title: data.playlistRenderer.title.simpleText,
+                thumbnail: {
+                    id: data.playlistRenderer.playlistId,
+                    url: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].url,
+                    height: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].height,
+                    width: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].width,
+                },
+                channel: {
+                    id: data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId,
+                    name: data.playlistRenderer.shortBylineText.runs[0].text,
+                    url: `https://www.youtube.com${data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
+                },
+                videos: parseInt(data.playlistRenderer.videoCount.replace(/[^0-9]/g, "")),
             },
-            channel: {
-                id: data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId,
-                name: data.playlistRenderer.shortBylineText.runs[0].text,
-                url: `https://www.youtube.com${data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-            },
-            videos: parseInt(data.playlistRenderer.videoCount.replace(/[^0-9]/g, ""))
-        }, true);
+            true
+        );
 
         return res;
     }
 
+    static getPlaylistVideos(data: any, limit: number = Infinity) {
+        const videos = [];
+
+        for (let i = 0; i < data.length; i++) {
+            if (limit === videos.length) break;
+            const info = data[i].playlistVideoRenderer;
+            if (!info || !info.shortBylineText) continue; // skip unknown videos
+
+            videos.push(
+                new Video({
+                    id: info.videoId,
+                    index: parseInt(info.index.simpleText) || 0,
+                    duration: Util.parseDuration(info.lengthText.simpleText) || 0,
+                    duration_raw: info.lengthText.simpleText,
+                    thumbnail: {
+                        id: info.videoId,
+                        url: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].url,
+                        height: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].height,
+                        width: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].width,
+                    },
+                    title: info.title.runs[0].text,
+                    channel: {
+                        id: info.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId || null,
+                        name: info.shortBylineText.runs[0].text || null,
+                        url: `https://www.youtube.com${info.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl || info.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
+                        icon: null,
+                    },
+                })
+            );
+        }
+
+        return videos;
+    }
+
     static getPlaylist(html: string, limit?: number): Playlist {
         if (!limit || typeof limit !== "number") limit = 100;
-        if (limit <= 0) limit = 100;
-        const videos = [];
+        if (limit <= 0) limit = Infinity;
         let parsed;
         let playlistDetails;
         try {
-            const rawJSON = `${html.split("{\"playlistVideoListRenderer\":{\"contents\":")[1].split("}],\"playlistId\"")[0]}}]`;
+            const rawJSON = `${html.split('{"playlistVideoListRenderer":{"contents":')[1].split('}],"playlistId"')[0]}}]`;
             parsed = JSON.parse(rawJSON);
-            playlistDetails = JSON.parse(html.split("{\"playlistSidebarRenderer\":")[1].split("}};</script>")[0]).items;
+            playlistDetails = JSON.parse(html.split('{"playlistSidebarRenderer":')[1].split("}};</script>")[0]).items;
         } catch (e) {
             return null;
         }
-
-        for (let i = 0; i < parsed.length; i++) {
-            if (limit === videos.length) break;
-            const info = parsed[i].playlistVideoRenderer;
-            if (!info || !info.shortBylineText) continue; // skip unknown videos
-
-            videos.push(new Video({
-                id: info.videoId,
-                index: parseInt(info.index.simpleText) || 0,
-                duration: Util.parseDuration(info.lengthText.simpleText) || 0,
-                duration_raw: info.lengthText.simpleText,
-                thumbnail: {
-                    id: info.videoId,
-                    url: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].url,
-                    height: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].height,
-                    width: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].width
-                },
-                title: info.title.runs[0].text,
-                channel: {
-                    id: info.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId || null,
-                    name: info.shortBylineText.runs[0].text || null,
-                    url: `https://www.youtube.com${info.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl || info.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-                    icon: null
-                }
-            }));
-        }
+        const API_KEY = html.split('INNERTUBE_API_KEY":"')[1]?.split('"')[0] ?? html.split('innertubeApiKey":"')[1]?.split('"')[0] ?? DEFAULT_API_KEY;
+        const videos = Util.getPlaylistVideos(parsed, limit);
 
         const data = playlistDetails[0].playlistSidebarPrimaryInfoRenderer;
 
@@ -289,6 +307,11 @@ class Util {
         const videosCount = data.stats[0].runs[0].text.replace(/[^0-9]/g, "") || 0;
 
         const res = new Playlist({
+            continuation: {
+                api: API_KEY,
+                token: Util.getContinuationToken(parsed),
+                clientVersion: html.split('"INNERTUBE_CONTEXT_CLIENT_VERSION":"')[1]?.split('"')[0] ?? html.split('"innertube_context_client_version":"')[1]?.split('"')[0] ?? "<some version>",
+            },
             id: data.title.runs[0].navigationEndpoint.watchEndpoint.playlistId,
             title: data.title.runs[0].text,
             videoCount: parseInt(videosCount) || 0,
@@ -297,25 +320,33 @@ class Util {
             videos: videos,
             url: `https://www.youtube.com/playlist?list=${data.title.runs[0].navigationEndpoint.watchEndpoint.playlistId}`,
             link: `https://www.youtube.com${data.title.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-            author: author ? {
-                name: author.videoOwnerRenderer.title.runs[0].text,
-                id: author.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.browseId,
-                url: `https://www.youtube.com${author.videoOwnerRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url || author.videoOwnerRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
-                icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails[author.videoOwnerRenderer.thumbnail.thumbnails.length - 1].url : null
-            }: {},
-            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails[data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length - 1].url : null
+            author: author
+                ? {
+                      name: author.videoOwnerRenderer.title.runs[0].text,
+                      id: author.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.browseId,
+                      url: `https://www.youtube.com${author.videoOwnerRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url || author.videoOwnerRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
+                      icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails[author.videoOwnerRenderer.thumbnail.thumbnails.length - 1].url : null,
+                  }
+                : {},
+            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails[data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length - 1].url : null,
         });
 
         return res;
     }
 
+    static getContinuationToken(ctx: any): string {
+        const continuationToken = ctx.find((x: any) => Object.keys(x)[0] === "continuationItemRenderer")?.continuationItemRenderer.continuationEndpoint?.continuationCommand?.token;
+        return continuationToken;
+    }
+
     static getVideo(html: string) {
-        let data, nextData = [];
+        let data,
+            nextData = [];
 
         try {
             const parsed = JSON.parse(html.split("var ytInitialData = ")[1].split(";</script>")[0]);
             data = parsed.contents.twoColumnWatchNextResults.results.results.contents;
-            
+
             try {
                 nextData = parsed.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results;
             } catch {}
@@ -325,7 +356,7 @@ class Util {
 
         const raw = {
             primary: data[0].videoPrimaryInfoRenderer,
-            secondary: data[1].videoSecondaryInfoRenderer
+            secondary: data[1].videoSecondaryInfoRenderer,
         };
 
         let info;
@@ -339,7 +370,7 @@ class Util {
         info = {
             ...raw.primary,
             ...raw.secondary,
-            info
+            info,
         };
 
         const payload = new Video({
@@ -356,19 +387,19 @@ class Util {
                 id: info.info.channelId,
                 url: `https://www.youtube.com${info.owner.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
                 icon: info.owner.videoOwnerRenderer.thumbnail.thumbnails[0],
-                subscribers: info.owner.videoOwnerRenderer.subscriberCountText.simpleText?.replace(" subscribers", "")
+                subscribers: info.owner.videoOwnerRenderer.subscriberCountText.simpleText?.replace(" subscribers", ""),
             },
             description: info.info.shortDescription,
             thumbnail: {
                 ...info.info.thumbnail.thumbnails[info.info.thumbnail.thumbnails.length - 1],
-                id: info.info.videoId
+                id: info.info.videoId,
             },
             uploadedAt: info.dateText.simpleText,
             ratings: {
                 likes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[0].replace(/,/g, "")),
-                dislikes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[1].replace(/,/g, ""))
+                dislikes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[1].replace(/,/g, "")),
             },
-            videos: Util.getNext(nextData)
+            videos: Util.getNext(nextData),
         });
 
         return payload;
@@ -389,7 +420,7 @@ class Util {
                         new Video({
                             id: details.videoId,
                             title: details.title.simpleText,
-                            views: parseInt(viewCount.replace(/,/g, '')) || 0,
+                            views: parseInt(viewCount.replace(/,/g, "")) || 0,
                             duration_raw: details.lengthText.simpleText ?? details.lengthText.accessibility.accessibilityData.label,
                             duration: Util.parseDuration(details.lengthText.simpleText) / 1000,
                             channel: {
@@ -398,23 +429,22 @@ class Util {
                                 url: `https://www.youtube.com${details.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
                                 icon: details.channelThumbnail.thumbnails[0],
                                 subscribers: "0",
-                                verified: Boolean(details.ownerBadges[0].metadataBadgeRenderer.tooltip === "Verified")
+                                verified: Boolean(details.ownerBadges[0].metadataBadgeRenderer.tooltip === "Verified"),
                             },
                             thumbnail: {
                                 ...details.thumbnail.thumbnails[details.thumbnail.thumbnails.length - 1],
-                                id: details.videoId
+                                id: details.videoId,
                             },
                             uploadedAt: details.publishedTimeText.simpleText,
                             ratings: {
                                 likes: 0,
-                                dislikes: 0
-                            }
+                                dislikes: 0,
+                            },
                         })
                     );
                 } catch {
                     continue;
                 }
-            
             }
         }
 
@@ -435,8 +465,7 @@ class Util {
     }
 
     static filter(ftype: string): string {
-
-        switch(ftype) {
+        switch (ftype) {
             case "playlist":
                 return "EgIQAw%253D%253D";
             case "video":
@@ -446,7 +475,6 @@ class Util {
             default:
                 throw new TypeError(`Invalid filter type "${ftype}"!`);
         }
-
     }
 
     static parseMS(milliseconds: number) {
@@ -456,22 +484,29 @@ class Util {
             days: roundTowardsZero(milliseconds / 86400000),
             hours: roundTowardsZero(milliseconds / 3600000) % 24,
             minutes: roundTowardsZero(milliseconds / 60000) % 60,
-            seconds: roundTowardsZero(milliseconds / 1000) % 60
+            seconds: roundTowardsZero(milliseconds / 1000) % 60,
         };
     }
 
     static durationString(data: any): string {
         const items = Object.keys(data);
-        const required = ['days', 'hours', 'minutes', 'seconds'];
+        const required = ["days", "hours", "minutes", "seconds"];
 
-        const parsed = items.filter((x) => required.includes(x)).map((m) => (data[m] > 0 ? data[m] : ''));
+        const parsed = items.filter((x) => required.includes(x)).map((m) => (data[m] > 0 ? data[m] : ""));
         const final = parsed
             .filter((x) => !!x)
-            .map((x) => x.toString().padStart(2, '0'))
-            .join(':');
-        return final.length <= 3 ? `0:${final.padStart(2, '0') || 0}` : final;
+            .map((x) => x.toString().padStart(2, "0"))
+            .join(":");
+        return final.length <= 3 ? `0:${final.padStart(2, "0") || 0}` : final;
     }
 
+    static json(data: string) {
+        try {
+            return JSON.parse(data);
+        } catch {
+            return null;
+        }
+    }
 }
 
 export default Util;

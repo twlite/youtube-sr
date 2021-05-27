@@ -6,11 +6,6 @@ Simple package to make YouTube search.
 - Simple
 - Fast
 
-# Limits
-- search results are around 20-25
-- Playlists cannot have more than 100 items
-- limited filters
-
 # Installation
 ## Node
 

@@ -64,13 +64,13 @@ class Video {
      */
     embedHTML(options = { id: "ytplayer", width: 640, height: 360 }): string {
         if (!this.id) return null;
-        return `<iframe id="${options.id || "ytplayer"}" type="text/html" width="${options.width || 640}" height="${options.height || 360}" src="${this.embedURL}" frameborder="0"></iframe>`
+        return `<iframe id="${options.id || "ytplayer"}" type="text/html" width="${options.width || 640}" height="${options.height || 360}" src="${this.embedURL}" frameborder="0"></iframe>`;
     }
 
     /**
      * YouTube video embed url
      */
-    get embedURL(): string{
+    get embedURL(): string {
         if (!this.id) return null;
         return `https://www.youtube.com/embed/${this.id}`;
     }
@@ -96,20 +96,19 @@ class Video {
             channel: {
                 name: this.channel.name,
                 id: this.channel.id,
-                icon: this.channel.iconURL()
+                icon: this.channel.iconURL(),
             },
             views: this.views,
             type: this.type,
             tags: this.tags,
             ratings: {
                 likes: this.likes,
-                dislikes: this.dislikes
+                dislikes: this.dislikes,
             },
             live: this.live,
-            private: this.private
+            private: this.private,
         };
     }
-
 }
 
 export default Video;

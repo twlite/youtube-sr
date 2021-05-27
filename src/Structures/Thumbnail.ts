@@ -1,3 +1,4 @@
+type ThumbnailType = "default" | "hqdefault" | "mqdefault" | "sddefault" | "maxresdefault" | "ultrares";
 class Thumbnail {
     id?: string;
     width: number;
@@ -33,7 +34,7 @@ class Thumbnail {
      * Returns thumbnail url
      * @param {"default"|"hqdefault"|"mqdefault"|"sddefault"|"maxresdefault"|"ultrares"} thumbnailType Thumbnail type
      */
-    displayThumbnailURL(thumbnailType = "ultrares"): string {
+    displayThumbnailURL(thumbnailType: ThumbnailType = "ultrares"): string {
         if (!["default", "hqdefault", "mqdefault", "sddefault", "maxresdefault", "ultrares"].includes(thumbnailType)) throw new Error(`Invalid thumbnail type "${thumbnailType}"!`);
         if (thumbnailType === "ultrares") return this.url;
         return `https://i3.ytimg.com/vi/${this.id}/${thumbnailType}.jpg`;
@@ -58,10 +59,9 @@ class Thumbnail {
             id: this.id,
             width: this.width,
             height: this.height,
-            url: this.url
+            url: this.url,
         };
     }
-
 }
 
 export default Thumbnail;

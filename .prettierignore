@@ -1,0 +1,7 @@
+.vscode/
+benchmark/
+build/
+deno/
+dev/
+scripts/
+node_modules/

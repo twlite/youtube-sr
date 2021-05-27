@@ -24,7 +24,6 @@ export interface PlaylistOptions {
 }
 
 class YouTube {
-
     constructor() {
         throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
     }
@@ -42,14 +41,14 @@ class YouTube {
     static async search(query: string, options?: SearchOptions & { type: "channel" }): Promise<Channel[]>;
     static async search(query: string, options?: SearchOptions & { type: "playlist" }): Promise<Playlist[]>;
     static async search(query: string, options?: SearchOptions & { type: "all" }): Promise<(Video | Channel | Playlist)[]>;
-    static async search(query: string, options?: SearchOptions): Promise<(Video|Channel|Playlist)[]> {
+    static async search(query: string, options?: SearchOptions): Promise<(Video | Channel | Playlist)[]> {
         if (!options) options = { limit: 20, type: "video", requestOptions: {} };
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
         options.type = options.type || "video";
-        
+
         const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
 
-        const url = `https://youtube.com/results?q=${encodeURIComponent(query.trim()).replace(/%20/g, '+')}&hl=en${filter}`;
+        const url = `https://youtube.com/results?q=${encodeURIComponent(query.trim()).replace(/%20/g, "+")}&hl=en${filter}`;
         const requestOptions = options.safeSearch ? { ...options.requestOptions, headers: { cookie: SAFE_SEARCH_COOKIE } } : {};
 
         const html = await Util.getHTML(url, requestOptions);
@@ -66,12 +65,12 @@ class YouTube {
     static searchOne(query: string, type: "video", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video>;
     static searchOne(query: string, type: "channel", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Channel>;
     static searchOne(query: string, type: "playlist", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Playlist>;
-    static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", safeSearch?: boolean, requestOptions?: RequestInit): Promise<(Video|Channel|Playlist)> {
+    static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video | Channel | Playlist> {
         if (!type) type = "video";
         return new Promise((resolve) => {
             // @ts-ignore
             YouTube.search(query, { limit: 1, type: type, requestOptions: requestOptions, safeSearch: Boolean(safeSearch) })
-                .then(res => {
+                .then((res) => {
                     if (!res || !res.length) return resolve(null);
                     resolve(res[0]);
                 })
@@ -93,7 +92,7 @@ class YouTube {
         if (!url || typeof url !== "string") throw new Error(`Expected playlist url, received ${typeof url}!`);
         Util.validatePlaylist(url);
         url = Util.getPlaylistURL(url);
-        
+
         const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
         return Util.getPlaylist(html, options && options.limit);
     }
@@ -150,7 +149,7 @@ class YouTube {
             PLAYLIST_URL: Util.PlaylistURLRegex,
             PLAYLIST_ID: Util.PlaylistIDRegex,
             VIDEO_ID: Util.VideoIDRegex,
-            VIDEO_URL: Util.VideoRegex
+            VIDEO_URL: Util.VideoRegex,
         };
     }
 }
