@@ -260,8 +260,8 @@ class Util {
             videos.push(
                 new Video({
                     id: info.videoId,
-                    index: parseInt(info.index.simpleText) || 0,
-                    duration: Util.parseDuration(info.lengthText.simpleText) || 0,
+                    index: parseInt(info.index?.simpleText) || 0,
+                    duration: Util.parseDuration(info.lengthText?.simpleText) || 0,
                     duration_raw: info.lengthText.simpleText,
                     thumbnail: {
                         id: info.videoId,

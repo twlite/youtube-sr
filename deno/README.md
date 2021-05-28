@@ -55,6 +55,9 @@ Returns playlist info.
 ## getVideo(url, options?)
 Returns basic video info.
 
+## homepage()
+Returns videos from the YouTube homepage.
+
 ## validate(src, type)
 Used to validate url/id.
 
