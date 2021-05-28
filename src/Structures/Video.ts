@@ -96,17 +96,17 @@ class Video {
             channel: {
                 name: this.channel.name,
                 id: this.channel.id,
-                icon: this.channel.iconURL(),
+                icon: this.channel.iconURL()
             },
             views: this.views,
             type: this.type,
             tags: this.tags,
             ratings: {
                 likes: this.likes,
-                dislikes: this.dislikes,
+                dislikes: this.dislikes
             },
             live: this.live,
-            private: this.private,
+            private: this.private
         };
     }
 }

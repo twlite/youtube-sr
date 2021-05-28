@@ -178,7 +178,7 @@ class Util {
             icon: data.channelRenderer.thumbnail.thumbnails[data.channelRenderer.thumbnail.thumbnails.length - 1],
             url: url,
             verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified")),
-            subscribers: data.channelRenderer.subscriberCountText.simpleText,
+            subscribers: data.channelRenderer.subscriberCountText.simpleText
         });
 
         return res;
@@ -203,7 +203,7 @@ class Util {
                 id: data.videoRenderer.videoId,
                 url: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].url,
                 height: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].height,
-                width: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].width,
+                width: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].width
             },
             channel: {
                 id: data.videoRenderer.ownerText.runs[0].navigationEndpoint.browseEndpoint.browseId || null,
@@ -212,12 +212,12 @@ class Util {
                 icon: {
                     url: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].url,
                     width: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].width,
-                    height: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].height,
+                    height: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].height
                 },
-                verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified")),
+                verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified"))
             },
             uploadedAt: data.videoRenderer.publishedTimeText?.simpleText ?? null,
-            views: data.videoRenderer.viewCountText?.simpleText?.replace(/[^0-9]/g, "") ?? 0,
+            views: data.videoRenderer.viewCountText?.simpleText?.replace(/[^0-9]/g, "") ?? 0
         });
 
         return res;
@@ -234,14 +234,14 @@ class Util {
                     id: data.playlistRenderer.playlistId,
                     url: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].url,
                     height: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].height,
-                    width: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].width,
+                    width: data.playlistRenderer.thumbnails[0].thumbnails[data.playlistRenderer.thumbnails[0].thumbnails.length - 1].width
                 },
                 channel: {
                     id: data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId,
                     name: data.playlistRenderer.shortBylineText.runs[0].text,
-                    url: `https://www.youtube.com${data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
+                    url: `https://www.youtube.com${data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`
                 },
-                videos: parseInt(data.playlistRenderer.videoCount.replace(/[^0-9]/g, "")),
+                videos: parseInt(data.playlistRenderer.videoCount.replace(/[^0-9]/g, ""))
             },
             true
         );
@@ -267,15 +267,15 @@ class Util {
                         id: info.videoId,
                         url: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].url,
                         height: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].height,
-                        width: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].width,
+                        width: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].width
                     },
                     title: info.title.runs[0].text,
                     channel: {
                         id: info.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId || null,
                         name: info.shortBylineText.runs[0].text || null,
                         url: `https://www.youtube.com${info.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl || info.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-                        icon: null,
-                    },
+                        icon: null
+                    }
                 })
             );
         }
@@ -310,7 +310,7 @@ class Util {
             continuation: {
                 api: API_KEY,
                 token: Util.getContinuationToken(parsed),
-                clientVersion: html.split('"INNERTUBE_CONTEXT_CLIENT_VERSION":"')[1]?.split('"')[0] ?? html.split('"innertube_context_client_version":"')[1]?.split('"')[0] ?? "<some version>",
+                clientVersion: html.split('"INNERTUBE_CONTEXT_CLIENT_VERSION":"')[1]?.split('"')[0] ?? html.split('"innertube_context_client_version":"')[1]?.split('"')[0] ?? "<some version>"
             },
             id: data.title.runs[0].navigationEndpoint.watchEndpoint.playlistId,
             title: data.title.runs[0].text,
@@ -325,10 +325,10 @@ class Util {
                       name: author.videoOwnerRenderer.title.runs[0].text,
                       id: author.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.browseId,
                       url: `https://www.youtube.com${author.videoOwnerRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url || author.videoOwnerRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
-                      icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails[author.videoOwnerRenderer.thumbnail.thumbnails.length - 1].url : null,
+                      icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails[author.videoOwnerRenderer.thumbnail.thumbnails.length - 1].url : null
                   }
                 : {},
-            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails[data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length - 1].url : null,
+            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails[data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length - 1].url : null
         });
 
         return res;
@@ -356,7 +356,7 @@ class Util {
 
         const raw = {
             primary: data[0].videoPrimaryInfoRenderer,
-            secondary: data[1].videoSecondaryInfoRenderer,
+            secondary: data[1].videoSecondaryInfoRenderer
         };
 
         let info;
@@ -370,7 +370,7 @@ class Util {
         info = {
             ...raw.primary,
             ...raw.secondary,
-            info,
+            info
         };
 
         const payload = new Video({
@@ -387,19 +387,19 @@ class Util {
                 id: info.info.channelId,
                 url: `https://www.youtube.com${info.owner.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
                 icon: info.owner.videoOwnerRenderer.thumbnail.thumbnails[0],
-                subscribers: info.owner.videoOwnerRenderer.subscriberCountText.simpleText?.replace(" subscribers", ""),
+                subscribers: info.owner.videoOwnerRenderer.subscriberCountText.simpleText?.replace(" subscribers", "")
             },
             description: info.info.shortDescription,
             thumbnail: {
                 ...info.info.thumbnail.thumbnails[info.info.thumbnail.thumbnails.length - 1],
-                id: info.info.videoId,
+                id: info.info.videoId
             },
             uploadedAt: info.dateText.simpleText,
             ratings: {
                 likes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[0].replace(/,/g, "")),
-                dislikes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[1].replace(/,/g, "")),
+                dislikes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[1].replace(/,/g, ""))
             },
-            videos: Util.getNext(nextData),
+            videos: Util.getNext(nextData)
         });
 
         return payload;
@@ -429,17 +429,17 @@ class Util {
                                 url: `https://www.youtube.com${details.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
                                 icon: details.channelThumbnail.thumbnails[0],
                                 subscribers: "0",
-                                verified: Boolean(details.ownerBadges[0].metadataBadgeRenderer.tooltip === "Verified"),
+                                verified: Boolean(details.ownerBadges[0].metadataBadgeRenderer.tooltip === "Verified")
                             },
                             thumbnail: {
                                 ...details.thumbnail.thumbnails[details.thumbnail.thumbnails.length - 1],
-                                id: details.videoId,
+                                id: details.videoId
                             },
                             uploadedAt: details.publishedTimeText.simpleText,
                             ratings: {
                                 likes: 0,
-                                dislikes: 0,
-                            },
+                                dislikes: 0
+                            }
                         })
                     );
                 } catch {
@@ -484,7 +484,7 @@ class Util {
             days: roundTowardsZero(milliseconds / 86400000),
             hours: roundTowardsZero(milliseconds / 3600000) % 24,
             minutes: roundTowardsZero(milliseconds / 60000) % 60,
-            seconds: roundTowardsZero(milliseconds / 1000) % 60,
+            seconds: roundTowardsZero(milliseconds / 1000) % 60
         };
     }
 

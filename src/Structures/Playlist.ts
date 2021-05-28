@@ -69,19 +69,19 @@ class Playlist {
                         gl: "US",
                         hl: "en",
                         clientName: "WEB",
-                        clientVersion: this._continuation.clientVersion,
+                        clientVersion: this._continuation.clientVersion
                     },
                     user: {},
-                    request: {},
-                },
-            }),
+                    request: {}
+                }
+            })
         });
 
         const contents = Util.json(nextPage)?.onResponseReceivedActions[0]?.appendContinuationItemsAction?.continuationItems;
         if (!contents) return [];
         const partial = Util.getPlaylistVideos(contents, limit);
         this._continuation.token = Util.getContinuationToken(contents);
-        this.videos = [...new Set([...this.videos, ...partial])];
+        this.videos = [...this.videos, ...partial];
 
         return partial;
     }
@@ -116,10 +116,10 @@ class Playlist {
             channel: {
                 name: this.channel.name,
                 id: this.channel.id,
-                icon: this.channel.iconURL(),
+                icon: this.channel.iconURL()
             },
             url: this.url,
-            videos: this.videos,
+            videos: this.videos
         };
     }
 }

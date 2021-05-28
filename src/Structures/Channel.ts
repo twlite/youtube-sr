@@ -62,7 +62,7 @@ class Channel {
             url: this.url,
             iconURL: this.iconURL(),
             type: this.type,
-            subscribers: this.subscribers,
+            subscribers: this.subscribers
         };
     }
 }

@@ -59,7 +59,7 @@ class Thumbnail {
             id: this.id,
             width: this.width,
             height: this.height,
-            url: this.url,
+            url: this.url
         };
     }
 }

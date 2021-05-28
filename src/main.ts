@@ -149,7 +149,7 @@ class YouTube {
             PLAYLIST_URL: Util.PlaylistURLRegex,
             PLAYLIST_ID: Util.PlaylistIDRegex,
             VIDEO_ID: Util.VideoIDRegex,
-            VIDEO_URL: Util.VideoRegex,
+            VIDEO_URL: Util.VideoRegex
         };
     }
 }

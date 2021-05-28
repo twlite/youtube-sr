@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "denofy": "cd scripts && node denofy.js",
-    "test": " cd dev && node index.js",
+    "test": "tsc && cd dev && node index.js",
     "bench": "tsc && node benchmark/bench.ts",
     "format": "prettier --write **/*.{js,ts}"
   },
