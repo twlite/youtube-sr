@@ -112,6 +112,11 @@ class YouTube {
         return Util.getVideo(html);
     }
 
+    static async homepage(): Promise<Video[]> {
+        const html = await Util.getHTML("https://www.youtube.com?hl=en");
+        return Util.parseHomepage(html);
+    }
+
     /**
      * Validates playlist
      * @param {string} url Playlist id or url/video id or url to validate

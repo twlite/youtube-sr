@@ -405,11 +405,11 @@ class Util {
         return payload;
     }
 
-    static getNext(body: any): Video[] {
+    static getNext(body: any, home = false): Video[] {
         const results = [];
 
         for (const result of body) {
-            const details = result.compactVideoRenderer;
+            const details = home ? result : result.compactVideoRenderer;
 
             if (details) {
                 try {
@@ -419,7 +419,7 @@ class Util {
                     results.push(
                         new Video({
                             id: details.videoId,
-                            title: details.title.simpleText,
+                            title: details.title.simpleText ?? details.title.runs[0]?.text,
                             views: parseInt(viewCount.replace(/,/g, "")) || 0,
                             duration_raw: details.lengthText.simpleText ?? details.lengthText.accessibility.accessibilityData.label,
                             duration: Util.parseDuration(details.lengthText.simpleText) / 1000,
@@ -427,7 +427,7 @@ class Util {
                                 name: details.shortBylineText.runs[0].text,
                                 id: details.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId,
                                 url: `https://www.youtube.com${details.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
-                                icon: details.channelThumbnail.thumbnails[0],
+                                icon: home ? details.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0] : details.channelThumbnail.thumbnails[0],
                                 subscribers: "0",
                                 verified: Boolean(details.ownerBadges[0].metadataBadgeRenderer.tooltip === "Verified")
                             },
@@ -439,7 +439,8 @@ class Util {
                             ratings: {
                                 likes: 0,
                                 dislikes: 0
-                            }
+                            },
+                            description: details.descriptionSnippet?.runs[0]?.text
                         })
                     );
                 } catch {
@@ -449,6 +450,22 @@ class Util {
         }
 
         return results;
+    }
+
+    static parseHomepage(html: string): Video[] {
+        let contents: any;
+
+        try {
+            contents = html.split("var ytInitialData = ")[1].split(";</script>")[0];
+            contents = JSON.parse(contents).contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.richGridRenderer.contents;
+        } catch {
+            return [];
+        }
+
+        if (!contents || !contents.length || !contents.find((x: any) => Object.keys(x)[0] === "richItemRenderer")) return [];
+        contents = contents.filter((a: any) => Object.keys(a)[0] === "richItemRenderer").map((m: any) => m.richItemRenderer.content.videoRenderer);
+
+        return Util.getNext(contents, true);
     }
 
     static getPlaylistURL(url: string): string {
