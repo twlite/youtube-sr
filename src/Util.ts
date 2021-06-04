@@ -292,7 +292,7 @@ class Util {
             const rawJSON = `${html.split('{"playlistVideoListRenderer":{"contents":')[1].split('}],"playlistId"')[0]}}]`;
             parsed = JSON.parse(rawJSON);
             playlistDetails = JSON.parse(html.split('{"playlistSidebarRenderer":')[1].split("}};</script>")[0]).items;
-        } catch (e) {
+        } catch {
             return null;
         }
         const API_KEY = html.split('INNERTUBE_API_KEY":"')[1]?.split('"')[0] ?? html.split('innertubeApiKey":"')[1]?.split('"')[0] ?? DEFAULT_API_KEY;

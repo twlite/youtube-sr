@@ -64,7 +64,7 @@ class Video {
      */
     embedHTML(options = { id: "ytplayer", width: 640, height: 360 }): string {
         if (!this.id) return null;
-        return `<iframe id="${options.id || "ytplayer"}" type="text/html" width="${options.width || 640}" height="${options.height || 360}" src="${this.embedURL}" frameborder="0"></iframe>`;
+        return `<iframe title="__youtube_sr_frame__" id="${options.id || "ytplayer"}" type="text/html" width="${options.width || 640}" height="${options.height || 360}" src="${this.embedURL}" frameborder="0"></iframe>`;
     }
 
     /**

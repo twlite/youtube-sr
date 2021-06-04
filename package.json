@@ -1,6 +1,6 @@
 {
   "name": "youtube-sr",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "Simple package to make YouTube search.",
   "files": [
     "build"
@@ -9,9 +9,7 @@
   "types": "build/main.d.ts",
   "scripts": {
     "build": "tsc",
-    "denofy": "cd scripts && node denofy.js",
     "test": "tsc && cd dev && node index.js",
-    "bench": "tsc && node benchmark/bench.ts",
     "format": "prettier --write **/*.{js,ts}"
   },
   "repository": {
@@ -47,13 +45,9 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@types/node": "^15.0.2",
+    "@types/node": "^15.12.0",
     "@types/node-fetch": "^2.5.10",
     "prettier": "^2.3.0",
-    "typescript": "^4.1.3",
-    "youtube-ext": "^1.0.9",
-    "ytdl-core": "^4.5.0",
-    "ytpl": "^2.2.0",
-    "ytsr": "^3.5.0"
+    "typescript": "^4.3.2"
   }
 }

@@ -112,9 +112,71 @@ class YouTube {
         return Util.getVideo(html);
     }
 
+    /**
+     * Fetches homepage videos
+     */
     static async homepage(): Promise<Video[]> {
         const html = await Util.getHTML("https://www.youtube.com?hl=en");
         return Util.parseHomepage(html);
+    }
+
+    /**
+     * Attempts to parse `INNERTUBE_API_KEY`
+     */
+    static async fetchInnerTubeKey() {
+        const html = await Util.getHTML("https://www.youtube.com?hl=en");
+        const key = html.split('INNERTUBE_API_KEY":"')[1]?.split('"')[0] ?? html.split('innertubeApiKey":"')[1]?.split('"')[0];
+        return key ?? null;
+    }
+
+    static async trending(): Promise<Video[]> {
+        const html = await Util.getHTML("https://www.youtube.com/feed/explore?hl=en");
+        let json;
+
+        try {
+            json = JSON.parse(html.split("var ytInitialData =")[1].split(";")[0]);
+        } catch {
+            return null;
+        }
+
+        const content = json.contents?.twoColumnBrowseResultsRenderer?.tabs[0].tabRenderer?.content?.sectionListRenderer?.contents[1]?.itemSectionRenderer?.contents[0]?.shelfRenderer?.content?.expandedShelfContentsRenderer?.items;
+        if (!content || !Array.isArray(content)) return null;
+
+        const res: Video[] = [];
+
+        for (const item of content.map((m) => m.videoRenderer)) {
+            res.push(
+                new Video({
+                    title: item.title.runs[0].text,
+                    id: item.videoId,
+                    url: `https://www.youtube.com/watch?v=${item.videoId}`,
+                    description: item.descriptionSnippet?.runs[0]?.text,
+                    duration: Util.parseDuration(item.lengthText.simpleText) / 1000 || 0,
+                    duration_raw: item.lengthText.simpleText,
+                    thumbnail: {
+                        id: item.videoId,
+                        url: item.thumbnail.thumbnails[item.thumbnail.thumbnails.length - 1].url,
+                        height: item.thumbnail.thumbnails[item.thumbnail.thumbnails.length - 1].height,
+                        width: item.thumbnail.thumbnails[item.thumbnail.thumbnails.length - 1].width
+                    },
+                    channel: {
+                        id: item.ownerText.runs[0].navigationEndpoint.browseEndpoint.browseId,
+                        name: item.ownerText.runs[0].text,
+                        url: `https://www.youtube.com${item.ownerText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
+                        icon: {
+                            url: null,
+                            width: 0,
+                            height: 0
+                        },
+                        verified: item.ownerBadges ? Boolean(item.ownerBadges[0].metadataBadgeRenderer.tooltip === "Verified") : false
+                    },
+                    uploadedAt: item.publishedTimeText.simpleText,
+                    views: item.viewCountText.simpleText.replace(/[^0-9]/g, "") || 0
+                })
+            );
+        }
+
+        return res;
     }
 
     /**

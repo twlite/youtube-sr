@@ -6,11 +6,27 @@ Simple package to make YouTube search.
 - Simple
 - Fast
 
+# Supported
+- ✅ Regular YouTube Search (Video/Channel/Playlist) (~25 items)
+- ✅ Get specific video
+- ✅ Get homepage contents
+- ✅ Get Playlist (including all videos)
+- ✅ YouTube safe search
+- ✅ YouTube Trending (~50 items)
+- ❌ Get specific channel
+- ❌ Get full search result
+- ❌ YouTube search filters
+
+# Why youtube-sr
+I originally made this library for a discord music bot created by one of my friend because the library he was using in his bot broke for several weeks.
+Since this package was designed for a private bot, I made this super simple and didn't include unnecessary features.
+Now, other packages such as **[discord-player](https://npmjs.com/package/discord-player)** and **2K+ GitHub repos** are using this library.
+
 # Installation
 ## Node
 
 ```sh
-$ npm i youtube-sr
+$ npm i --save youtube-sr
 ```
 
 ```js
@@ -44,19 +60,79 @@ YouTube.search("indila last dance", { limit: 3, safeSearch: true })
 
 # API
 ## search(query, options?)
-Used to search videos/channels/playlists.
+Used to search videos/channels/playlists. This works like a general YouTube search.
 
-## searchOne(query, options?)
+```js
+YouTube.search("the weeknd save your tears")
+    .then(console.log) // Response[]
+    .catch(console.error);
+```
+
+## searchOne(query, ...options?)
 Similar to search but makes single search.
+
+```js
+YouTube.search("the weeknd save your tears")
+    .then(console.log) // Response
+    .catch(console.error);
+```
 
 ## getPlaylist(query, options?)
 Returns playlist info.
+> Note: Data returned by `getPlaylist` is different from the playlist data obtained by `search`.
+> **Using `limit` in `options` wont fetch all videos. They are for current chunk only!
+
+**Basic**
+```js
+YouTube.getPlaylist("some_youtube_playlist")
+  .then(console.log) // max 100 items
+  .catch(console.error);
+```
+
+**Getting all videos from a playlist at once**
+```js
+YouTube.getPlaylist("some_youtube_playlist")
+  .then(playlist => playlist.fetch()) // if your playlist has 500 videos, this makes additional 4 requests to get rest of the 400 videos. (100 videos = 1 request)
+  .then(console.log) // all parsable videos
+  .catch(console.error);
+```
+
+**Lazily getting videos from a playlist**
+```js
+YouTube.getPlaylist("some_youtube_playlist")
+  .then(playlist => playlist.next()) // fetches next 100 items
+  .then(console.log) // all parsable videos
+  .catch(console.error);
+```
 
 ## getVideo(url, options?)
-Returns basic video info.
+Returns basic video info by its url.
+
+> Note: Data returned by `getVideo` is different from the `search`.
+
+```js
+YouTube.getVideo("Some_Video_URL")
+  .then(console.log) // Video info
+  .catch(console.error);
+```
 
 ## homepage()
 Returns videos from the YouTube homepage.
+
+```js
+YouTube.homepage()
+  .then(console.log) // videos from youtube homepage
+  .catch(console.error);
+```
+
+## trending()
+Returns trending videos from the YouTube.
+
+```js
+YouTube.trending()
+  .then(console.log) // trending videos from youtube
+  .catch(console.error);
+```
 
 ## validate(src, type)
 Used to validate url/id.
