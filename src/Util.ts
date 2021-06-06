@@ -341,8 +341,7 @@ class Util {
 
     static getVideo(html: string) {
         let data,
-            nextData = [];
-
+            nextData = {};
         try {
             const parsed = JSON.parse(html.split("var ytInitialData = ")[1].split(";</script>")[0]);
             data = parsed.contents.twoColumnWatchNextResults.results.results.contents;
@@ -399,14 +398,15 @@ class Util {
                 likes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[0].replace(/,/g, "")),
                 dislikes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[1].replace(/,/g, ""))
             },
-            videos: Util.getNext(nextData)
+            videos: Util.getNext(nextData ?? {})
         });
 
         return payload;
     }
 
     static getNext(body: any, home = false): Video[] {
-        const results = [];
+        const results: Video[] = [];
+        if (typeof body[Symbol.iterator] !== "function") return results;
 
         for (const result of body) {
             const details = home ? result : result.compactVideoRenderer;
