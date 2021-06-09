@@ -74,6 +74,7 @@ class Util {
      * @param {string} duration Duration to parse
      */
     static parseDuration(duration: string): number {
+        duration ??= "0:00";
         const args = duration.split(":");
         let dur = 0;
 
@@ -262,7 +263,7 @@ class Util {
                     id: info.videoId,
                     index: parseInt(info.index?.simpleText) || 0,
                     duration: Util.parseDuration(info.lengthText?.simpleText) || 0,
-                    duration_raw: info.lengthText.simpleText,
+                    duration_raw: info.lengthText?.simpleText ?? "0:00",
                     thumbnail: {
                         id: info.videoId,
                         url: info.thumbnail.thumbnails[info.thumbnail.thumbnails.length - 1].url,
