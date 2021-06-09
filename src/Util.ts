@@ -304,7 +304,7 @@ class Util {
         if (!data.title.runs || !data.title.runs.length) return null;
         const author = playlistDetails[1]?.playlistSidebarSecondaryInfoRenderer.videoOwner;
         const views = data.stats.length === 3 ? data.stats[1].simpleText.replace(/[^0-9]/g, "") : 0;
-        const lastUpdate = data.stats.length === 3 ? (data.stats[2].runs ? data.stats[2].runs[0].text : data.stats[2].simpleText) : data.stats[1].simpleText;
+        const lastUpdate = data.stats.find((x: any) => "runs" in x && x["runs"].find((y: any) => y.text.toLowerCase().includes("last update")))?.runs.pop()?.text ?? null;
         const videosCount = data.stats[0].runs[0].text.replace(/[^0-9]/g, "") || 0;
 
         const res = new Playlist({
@@ -316,7 +316,7 @@ class Util {
             id: data.title.runs[0].navigationEndpoint.watchEndpoint.playlistId,
             title: data.title.runs[0].text,
             videoCount: parseInt(videosCount) || 0,
-            lastUpdate: lastUpdate || null,
+            lastUpdate: lastUpdate,
             views: parseInt(views) || 0,
             videos: videos,
             url: `https://www.youtube.com/playlist?list=${data.title.runs[0].navigationEndpoint.watchEndpoint.playlistId}`,
