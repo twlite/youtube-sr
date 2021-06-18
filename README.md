@@ -134,6 +134,34 @@ YouTube.trending()
   .catch(console.error);
 ```
 
+## getSuggestions(query)
+Returns youtube search suggestions.
+
+```js
+YouTube.getSuggestions("alan walker")
+  .then(console.log);
+
+/*
+[
+  'alan walker',
+  'alan walker songs',
+  'alan walker faded',
+  'alan walker alone',
+  'alan walker remix',
+  'alan walker spectre',
+  'alan walker on my way',
+  'alan walker new song',
+  'alan walker lily',
+  'alan walker darkside',
+  'alan walker pubg song',
+  'alan walker ringtone',
+  'alan walker ignite',
+  'alan walker live',
+  'k'
+]
+*/
+```
+
 ## validate(src, type)
 Used to validate url/id.
 

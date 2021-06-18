@@ -62,9 +62,9 @@ class YouTube {
      * @param {boolean} safeSearch Safe search filter
      * @param {RequestInit} requestOptions Request options
      */
-    static searchOne(query: string, type: "video", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video>;
-    static searchOne(query: string, type: "channel", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Channel>;
-    static searchOne(query: string, type: "playlist", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Playlist>;
+    static searchOne(query: string, type?: "video", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video>;
+    static searchOne(query: string, type?: "channel", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Channel>;
+    static searchOne(query: string, type?: "playlist", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Playlist>;
     static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video | Channel | Playlist> {
         if (!type) type = "video";
         return new Promise((resolve) => {
@@ -177,6 +177,18 @@ class YouTube {
         }
 
         return res;
+    }
+
+    static async getSuggestions(query: string) {
+        if (!query) throw new Error("Search query was not provided!");
+
+        const res = await Util.getHTML(`https://clients1.google.com/complete/search?client=youtube&gs_ri=youtube&ds=yt&q=${encodeURIComponent(query)}`);
+        const searchSuggestions: string[] = [];
+        res.split("[").forEach((ele, index) => {
+            if (!ele.split('"')[1] || index === 1) return;
+            return searchSuggestions.push(ele.split('"')[1]);
+        });
+        return searchSuggestions;
     }
 
     /**
