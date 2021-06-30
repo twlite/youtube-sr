@@ -188,6 +188,8 @@ class YouTube {
             if (!ele.split('"')[1] || index === 1) return;
             return searchSuggestions.push(ele.split('"')[1]);
         });
+
+        searchSuggestions.pop();
         return searchSuggestions;
     }
 
