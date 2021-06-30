@@ -156,8 +156,7 @@ YouTube.getSuggestions("alan walker")
   'alan walker pubg song',
   'alan walker ringtone',
   'alan walker ignite',
-  'alan walker live',
-  'k'
+  'alan walker live'
 ]
 */
 ```
