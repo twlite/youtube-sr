@@ -392,7 +392,7 @@ class Util {
                 id: info.info.channelId,
                 url: `https://www.youtube.com${info.owner.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
                 icon: info.owner.videoOwnerRenderer.thumbnail.thumbnails[0],
-                subscribers: info.owner.videoOwnerRenderer.subscriberCountText.simpleText?.replace(" subscribers", "")
+                subscribers: info.owner.videoOwnerRenderer.subscriberCountText?.simpleText?.replace(" subscribers", "")
             },
             description: info.info.shortDescription,
             thumbnail: {
