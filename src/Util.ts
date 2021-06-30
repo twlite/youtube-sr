@@ -68,7 +68,10 @@ class Util {
 
         return new Promise((resolve, reject) => {
             fetch(url, requestOptions)
-                .then((res: Response) => res.text())
+                .then((res: Response) => {
+                    if (!res.ok) throw new Error(`Rejected with status code: ${res.status}`);
+                    return res.text();
+                })
                 .then((html: string) => resolve(html))
                 .catch((e: Error) => reject(e));
         });
