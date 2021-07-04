@@ -388,7 +388,7 @@ class Util {
             tags: info.info.keywords,
             private: info.info.isPrivate,
             live: info.info.isLiveContent,
-            duration: parseInt(info.info.lengthSeconds),
+            duration: parseInt(info.info.lengthSeconds) * 1000,
             duration_raw: Util.durationString(Util.parseMS(parseInt(info.info.lengthSeconds) * 1000 || 0)),
             channel: {
                 name: info.info.author,
