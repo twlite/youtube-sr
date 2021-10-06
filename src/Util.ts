@@ -20,7 +20,7 @@ function getFetch(): typeof window.fetch {
     if (typeof window !== "undefined") return window.fetch;
 
     // node
-    return require("node-fetch");
+    return require("undici").fetch;
 }
 
 class Util {
