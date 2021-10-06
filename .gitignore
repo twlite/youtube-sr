@@ -2,7 +2,7 @@ node_modules/
 package-lock.json
 yarn.lock
 dev/
-build/
+dist/
 deno/
 __tests__
 jest.config.js
