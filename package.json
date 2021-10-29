@@ -1,6 +1,6 @@
 {
   "name": "youtube-sr",
-  "version": "4.1.8",
+  "version": "4.1.9",
   "description": "Simple package to make YouTube search.",
   "files": [
     "dist"
@@ -8,11 +8,11 @@
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "exports": {
-      "require": "./dist/main.js",
-      "import": "./dist/main.mjs"
-    },
+    "require": "./dist/main.js",
+    "import": "./dist/main.mjs"
+  },
   "scripts": {
-    "build": "tsc && gen-esm-wrapper ./dist/main.js ./dist/main.mjs",
+    "build": "rimraf dist && tsc && gen-esm-wrapper ./dist/main.js ./dist/main.mjs",
     "test": "tsc && cd dev && node index.js",
     "format": "prettier --write **/*.{js,ts}"
   },
@@ -46,12 +46,15 @@
   },
   "homepage": "https://github.com/DevSnowflake/youtube-sr#readme",
   "dependencies": {
-    "undici": "^4.7.0"
+    "node-fetch": "^2.6.5"
   },
   "devDependencies": {
     "@types/node": "^15.12.0",
+    "fs-extra": "^10.0.0",
     "gen-esm-wrapper": "^1.1.3",
     "prettier": "^2.3.0",
+    "readdirp": "^3.6.0",
+    "rimraf": "^3.0.2",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.2"
   }
