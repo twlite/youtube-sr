@@ -1,3 +1,4 @@
+import { closeSync, openSync, writeSync } from "fs";
 import Channel from "./Structures/Channel";
 import Playlist from "./Structures/Playlist";
 import Video from "./Structures/Video";
@@ -354,6 +355,9 @@ class Util {
         try {
             const parsed = JSON.parse(html.split("var ytInitialData = ")[1].split(";</script>")[0]);
             data = parsed.contents.twoColumnWatchNextResults.results.results.contents;
+            const fd = openSync("./result.json", "w");
+            writeSync(fd, JSON.stringify(data));
+            closeSync(fd);
 
             try {
                 nextData = parsed.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results;
@@ -363,8 +367,8 @@ class Util {
         }
 
         const raw = {
-            primary: data[0].videoPrimaryInfoRenderer,
-            secondary: data[1].videoSecondaryInfoRenderer
+            primary: data.find((section: any) => "videoPrimaryInfoRenderer" in section)?.videoPrimaryInfoRenderer,
+            secondary: data.find((section: any) => "videoSecondaryInfoRenderer" in section)?.videoSecondaryInfoRenderer
         };
 
         let info;
