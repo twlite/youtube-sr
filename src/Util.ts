@@ -404,13 +404,21 @@ class Util {
             },
             uploadedAt: info.dateText.simpleText,
             ratings: {
-                likes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[0].replace(/,/g, "")),
-                dislikes: parseInt(info.sentimentBar.sentimentBarRenderer.tooltip.split(" / ")[1].replace(/,/g, ""))
+                likes: this.getInfoLikesCount(info),
+                dislikes: 0
             },
             videos: Util.getNext(nextData ?? {})
         });
 
         return payload;
+    }
+
+    static getInfoLikesCount(info: Record<string, any>) {
+        const buttons = info.videoActions.menuRenderer.topLevelButtons as any[];
+        const button = buttons.find((button) => button.toggleButtonRenderer?.defaultIcon.iconType === "LIKE");
+        if (!button) return 0;
+
+        return parseInt(button.toggleButtonRenderer.defaultText.accessibility.accessibilityData.label.split(" ")[0].replace(/,/g, ""));
     }
 
     static getNext(body: any, home = false): Video[] {
