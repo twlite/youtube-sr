@@ -363,8 +363,8 @@ class Util {
         }
 
         const raw = {
-            primary: data[0].videoPrimaryInfoRenderer,
-            secondary: data[1].videoSecondaryInfoRenderer
+            primary: data.find((section: any) => "videoPrimaryInfoRenderer" in section)?.videoPrimaryInfoRenderer,
+            secondary: data.find((section: any) => "videoSecondaryInfoRenderer" in section)?.videoSecondaryInfoRenderer
         };
 
         let info;
