@@ -5,3 +5,4 @@ deno/
 dev/
 scripts/
 node_modules/
+test/

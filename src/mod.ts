@@ -1,6 +1,6 @@
 /**
  * YouTube Search
- * @author Snowflake107
+ * @author DevAndromeda
  */
 
 import Util from "./Util";
@@ -24,7 +24,7 @@ export interface PlaylistOptions {
 }
 
 class YouTube {
-    constructor() {
+    private constructor() {
         throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
     }
 

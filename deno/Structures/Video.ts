@@ -1,5 +1,6 @@
-import Channel from "./Channel";
-import Thumbnail from "./Thumbnail";
+// @ts-nocheck
+import Channel from "./Channel.ts";
+import Thumbnail from "./Thumbnail.ts";
 
 class Video {
     id?: string;

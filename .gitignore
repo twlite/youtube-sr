@@ -3,8 +3,7 @@ package-lock.json
 yarn.lock
 dev/
 dist/
-deno/
 __tests__
 jest.config.js
 .vscode/
-scripts/
+test/

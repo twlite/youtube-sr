@@ -8,10 +8,11 @@
 		"strictNullChecks": false,
 		"esModuleInterop": true,
 		"downlevelIteration": true,
-		"removeComments": true
+		"removeComments": true,
+		"forceConsistentCasingInFileNames": true
 	},
 	"include": [
 		"src/**/*"
 	],
-	"exclude": ["node_modules", "deno", "dev"],
+	"exclude": ["node_modules", "deno", "dev", "scripts", "test"],
 }

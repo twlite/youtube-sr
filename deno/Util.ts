@@ -1,6 +1,7 @@
-import Channel from "./Structures/Channel";
-import Playlist from "./Structures/Playlist";
-import Video from "./Structures/Video";
+// @ts-nocheck
+import Channel from "./Structures/Channel.ts";
+import Playlist from "./Structures/Playlist.ts";
+import Video from "./Structures/Video.ts";
 
 const PLAYLIST_REGEX = /^https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})$/;
 const PLAYLIST_ID = /(PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;

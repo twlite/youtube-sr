@@ -5,20 +5,21 @@
   "files": [
     "dist"
   ],
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
+  "main": "dist/mod.js",
+  "types": "dist/mod.d.ts",
   "exports": {
-    "require": "./dist/main.js",
-    "import": "./dist/main.mjs"
+    "require": "./dist/mod.js",
+    "import": "./dist/mod.mjs"
   },
   "scripts": {
-    "build": "rimraf dist && tsc && gen-esm-wrapper ./dist/main.js ./dist/main.mjs",
-    "test": "tsc && cd dev && node index.js",
+    "build": "npm run build:node && npm run build:deno",
+    "build:node": "rimraf dist && tsc && gen-esm-wrapper ./dist/mod.js ./dist/mod.mjs",
+    "build:deno": "node scripts/deno.js",
     "format": "prettier --write **/*.{js,ts}"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DevSnowflake/youtube-sr.git"
+    "url": "git+https://github.com/DevAndromeda/youtube-sr.git"
   },
   "keywords": [
     "youtube",
@@ -39,19 +40,17 @@
     "youtube-api",
     "simple-youtube-api"
   ],
-  "author": "Snowflake107",
+  "author": "DevAndromeda",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/DevSnowflake/youtube-sr/issues"
+    "url": "https://github.com/DevAndromeda/youtube-sr/issues"
   },
-  "homepage": "https://github.com/DevSnowflake/youtube-sr#readme",
-  "dependencies": {
-    "node-fetch": "^2.6.5"
-  },
+  "homepage": "https://github.com/DevAndromeda/youtube-sr#readme",
   "devDependencies": {
-    "@types/node": "^15.12.0",
+    "@types/node": "^16.11.12",
     "fs-extra": "^10.0.0",
     "gen-esm-wrapper": "^1.1.3",
+    "node-fetch": "2.6.6",
     "prettier": "^2.3.0",
     "readdirp": "^3.6.0",
     "rimraf": "^3.0.2",
