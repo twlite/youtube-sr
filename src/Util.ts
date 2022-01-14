@@ -408,7 +408,7 @@ class Util {
             },
             uploadedAt: info.dateText.simpleText,
             ratings: {
-                likes: this.getInfoLikesCount(info),
+                likes: this.getInfoLikesCount(info) || 0,
                 dislikes: 0
             },
             videos: Util.getNext(nextData ?? {}) || []
@@ -422,7 +422,7 @@ class Util {
         const button = buttons.find((button) => button.toggleButtonRenderer?.defaultIcon.iconType === "LIKE");
         if (!button) return 0;
 
-        return parseInt(button.toggleButtonRenderer.defaultText.accessibility.accessibilityData.label.split(" ")[0].replace(/,/g, ""));
+        return parseInt(button.toggleButtonRenderer.defaultText.accessibility?.accessibilityData.label.split(" ")[0].replace(/,/g, ""));
     }
 
     static getNext(body: any, home = false): Video[] {
