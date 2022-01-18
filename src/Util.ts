@@ -19,12 +19,18 @@ function getFetch(): typeof window.fetch {
     // browser/deno
     if (typeof window !== "undefined") return window.fetch;
 
+    // for whatever reason
+    if (typeof globalThis.fetch === "function") return globalThis.fetch;
+
     for (const fetchLib of ["undici", "node-fetch"]) {
         try {
             const pkg = require(fetchLib);
-            return fetchLib === "undici" ? pkg.fetch : pkg.default || pkg;
+            const mod = pkg.fetch || pkg.default || pkg;
+            if (mod) return mod;
         } catch {}
     }
+
+    throw new Error(`Could not find fetch library. Install \`node-fetch\`/\`undici\` or define \`fetch\` in global scope!`);
 }
 
 class Util {

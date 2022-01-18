@@ -20,12 +20,18 @@ function getFetch(): typeof window.fetch {
     // browser/deno
     if (typeof window !== "undefined") return window.fetch;
 
+    // for whatever reason
+    if (typeof globalThis.fetch === "function") return globalThis.fetch;
+
     for (const fetchLib of ["undici", "node-fetch"]) {
         try {
             const pkg = require(fetchLib);
-            return fetchLib === "undici" ? pkg.fetch : pkg.default || pkg;
+            const mod = pkg.fetch || pkg.default || pkg;
+            if (mod) return mod;
         } catch {}
     }
+
+    throw new Error(`Could not find fetch library. Install \`node-fetch\`/\`undici\` or define \`fetch\` in global scope!`);
 }
 
 class Util {
@@ -409,7 +415,7 @@ class Util {
             },
             uploadedAt: info.dateText.simpleText,
             ratings: {
-                likes: this.getInfoLikesCount(info),
+                likes: this.getInfoLikesCount(info) || 0,
                 dislikes: 0
             },
             videos: Util.getNext(nextData ?? {}) || []
@@ -423,7 +429,7 @@ class Util {
         const button = buttons.find((button) => button.toggleButtonRenderer?.defaultIcon.iconType === "LIKE");
         if (!button) return 0;
 
-        return parseInt(button.toggleButtonRenderer.defaultText.accessibility.accessibilityData.label.split(" ")[0].replace(/,/g, ""));
+        return parseInt(button.toggleButtonRenderer.defaultText.accessibility?.accessibilityData.label.split(" ")[0].replace(/,/g, ""));
     }
 
     static getNext(body: any, home = false): Video[] {
