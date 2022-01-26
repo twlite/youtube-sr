@@ -538,8 +538,8 @@ class Util {
 
         const parsed = items.filter((x) => required.includes(x)).map((m) => (data[m] > 0 ? data[m] : ""));
         const final = parsed
-            .filter((x) => !!x)
-            .map((x) => x.toString().padStart(2, "0"))
+            .slice(parsed.findIndex((x) => !!x))
+            .map((x, i) => i == 0 ? x.toString() : x.toString().padStart(2, "0"))
             .join(":");
         return final.length <= 3 ? `0:${final.padStart(2, "0") || 0}` : final;
     }
