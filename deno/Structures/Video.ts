@@ -69,6 +69,13 @@ class Video {
     }
 
     /**
+     * Creates mix playlist url from this video
+     */
+    createMixURL() {
+        return `${this.url}&list=RD${this.id}`;
+    }
+
+    /**
      * YouTube video embed url
      */
     get embedURL(): string {

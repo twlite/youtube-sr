@@ -134,7 +134,7 @@ class YouTube {
         let json;
 
         try {
-            json = JSON.parse(html.split("var ytInitialData =")[1].split(";")[0]);
+            json = JSON.parse(html.split("var ytInitialData =")[1].split(";</script>")[0]);
         } catch {
             return null;
         }
@@ -206,7 +206,7 @@ class YouTube {
             case "PLAYLIST":
                 return YouTube.Regex.PLAYLIST_URL.test(url);
             case "PLAYLIST_ID":
-                return YouTube.Regex.PLAYLIST_ID.test(url);
+                return YouTube.Regex.PLAYLIST_ID.test(url) || YouTube.Regex.ALBUM.test(url);
             case "VIDEO":
                 return YouTube.Regex.VIDEO_URL.test(url);
             case "VIDEO_ID":
@@ -229,6 +229,7 @@ class YouTube {
         return {
             PLAYLIST_URL: Util.PlaylistURLRegex,
             PLAYLIST_ID: Util.PlaylistIDRegex,
+            ALBUM: Util.AlbumRegex,
             VIDEO_ID: Util.VideoIDRegex,
             VIDEO_URL: Util.VideoRegex
         };

@@ -5,10 +5,11 @@ import Video from "./Structures/Video.ts";
 
 const PLAYLIST_REGEX = /^https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})$/;
 const PLAYLIST_ID = /(PL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;
+const ALBUM_REGEX = /(RDC|O)LAK5uy_[a-zA-Z0-9-_]{33}/;
 const VIDEO_URL = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
 const VIDEO_ID = /^[a-zA-Z0-9-_]{11}$/;
 const fetch = getFetch();
-const DEFAULT_API_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
+const DEFAULT_INNERTUBE_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
 
 export interface ParseSearchInterface {
     type?: "video" | "playlist" | "channel" | "all";
@@ -18,7 +19,7 @@ export interface ParseSearchInterface {
 
 function getFetch(): typeof window.fetch {
     // browser/deno
-    if (typeof window !== "undefined") return window.fetch;
+    if (typeof window !== "undefined" && "fetch" in window) return window.fetch;
 
     // for whatever reason
     if (typeof globalThis.fetch === "function") return globalThis.fetch;
@@ -31,7 +32,7 @@ function getFetch(): typeof window.fetch {
         } catch {}
     }
 
-    throw new Error(`Could not find fetch library. Install \`node-fetch\`/\`undici\` or define \`fetch\` in global scope!`);
+    throw new Error(`Could not find fetch library. Install "node-fetch"/"undici" or define "fetch" in global scope!`);
 }
 
 class Util {
@@ -45,6 +46,10 @@ class Util {
 
     static get VideoIDRegex(): RegExp {
         return VIDEO_ID;
+    }
+
+    static get AlbumRegex(): RegExp {
+        return ALBUM_REGEX;
     }
 
     /**
@@ -69,13 +74,20 @@ class Util {
      * @param {RequestInit} [requestOptions] Request Options
      * @returns {Promise<string>}
      */
-    static getHTML(url: string, requestOptions?: RequestInit): Promise<string> {
-        if (!requestOptions)
-            requestOptions = {
-                headers: {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0"
-                }
-            };
+    static getHTML(url: string, requestOptions: RequestInit = {}): Promise<string> {
+        requestOptions = Object.assign(
+            {},
+            {
+                headers: Object.assign(
+                    {},
+                    {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0",
+                    },
+                    requestOptions?.headers || {}
+                )
+            } as RequestInit,
+            requestOptions || {}
+        );
 
         return new Promise((resolve, reject) => {
             fetch(url, requestOptions)
@@ -315,7 +327,7 @@ class Util {
         } catch {
             return null;
         }
-        const API_KEY = html.split('INNERTUBE_API_KEY":"')[1]?.split('"')[0] ?? html.split('innertubeApiKey":"')[1]?.split('"')[0] ?? DEFAULT_API_KEY;
+        const API_KEY = html.split('INNERTUBE_API_KEY":"')[1]?.split('"')[0] ?? html.split('innertubeApiKey":"')[1]?.split('"')[0] ?? DEFAULT_INNERTUBE_KEY;
         const videos = Util.getPlaylistVideos(parsed, limit);
 
         const data = playlistDetails[0].playlistSidebarPrimaryInfoRenderer;
@@ -498,14 +510,15 @@ class Util {
 
     static getPlaylistURL(url: string): string {
         if (typeof url !== "string") return null;
-        const group = PLAYLIST_ID.exec(url);
+        const group = PLAYLIST_ID.exec(url) || ALBUM_REGEX.exec(url);
         if (!group) return null;
+        if (group[0].startsWith("RD") && !ALBUM_REGEX.exec(group[0])) throw new Error("Mixes are not supported!");
         const finalURL = `https://www.youtube.com/playlist?list=${group[0]}`;
         return finalURL;
     }
 
     static validatePlaylist(url: string): void {
-        if (typeof url === "string" && url.match(PLAYLIST_ID) !== null) return;
+        if (typeof url === "string" && (url.match(PLAYLIST_ID) !== null || url.match(ALBUM_REGEX) !== null)) return;
         throw new Error("Invalid playlist url");
     }
 
@@ -523,13 +536,11 @@ class Util {
     }
 
     static parseMS(milliseconds: number) {
-        const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
-
         return {
-            days: roundTowardsZero(milliseconds / 86400000),
-            hours: roundTowardsZero(milliseconds / 3600000) % 24,
-            minutes: roundTowardsZero(milliseconds / 60000) % 60,
-            seconds: roundTowardsZero(milliseconds / 1000) % 60
+            days: Math.trunc(milliseconds / 86400000),
+            hours: Math.trunc(milliseconds / 3600000) % 24,
+            minutes: Math.trunc(milliseconds / 60000) % 60,
+            seconds: Math.trunc(milliseconds / 1000) % 60
         };
     }
 
@@ -540,7 +551,7 @@ class Util {
         const parsed = items.filter((x) => required.includes(x)).map((m) => (data[m] > 0 ? data[m] : ""));
         const final = parsed
             .slice(parsed.findIndex((x) => !!x))
-            .map((x, i) => i == 0 ? x.toString() : x.toString().padStart(2, "0"))
+            .map((x, i) => (i == 0 ? x.toString() : x.toString().padStart(2, "0")))
             .join(":");
         return final.length <= 3 ? `0:${final.padStart(2, "0") || 0}` : final;
     }

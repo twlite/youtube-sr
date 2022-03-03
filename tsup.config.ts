@@ -6,7 +6,7 @@ export default defineConfig({
     entryPoints: ["src/mod.ts"],
     outDir: "dist",
     format: ["esm", "cjs"],
-    minify: true,
+    minify: false,
     skipNodeModulesBundle: true,
     sourcemap: false,
     target: "ES6"
