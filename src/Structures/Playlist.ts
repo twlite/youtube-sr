@@ -19,7 +19,7 @@ class Playlist {
 
     constructor(data = {}, searchResult = false) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
-
+        Object.defineProperty(this, "_continuation", { enumerable: false, configurable: true, writable: true });
         if (!!searchResult) this._patchSearch(data);
         else this._patch(data);
     }

@@ -1,6 +1,6 @@
 {
   "name": "youtube-sr",
-  "version": "4.1.15",
+  "version": "4.1.16",
   "description": "Simple package to make YouTube search.",
   "files": [
     "dist"
@@ -49,8 +49,8 @@
   "homepage": "https://github.com/DevAndromeda/youtube-sr#readme",
   "devDependencies": {
     "@types/node": "^16.11.12",
+    "chalk": "^5.0.1",
     "fs-extra": "^10.0.0",
-    "node-fetch": "2.6.6",
     "prettier": "^2.3.0",
     "readdirp": "^3.6.0",
     "rimraf": "^3.0.2",

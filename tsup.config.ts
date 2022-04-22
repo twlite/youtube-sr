@@ -7,6 +7,7 @@ export default defineConfig({
     outDir: "dist",
     format: ["esm", "cjs"],
     minify: false,
+    keepNames: true,
     skipNodeModulesBundle: true,
     sourcemap: false,
     target: "ES6"

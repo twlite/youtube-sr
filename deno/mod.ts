@@ -5,16 +5,14 @@
  */
 
 import Util from "./Util.ts";
-import Channel from "./Structures/Channel.ts";
-import Playlist from "./Structures/Playlist.ts";
-import Video from "./Structures/Video.ts";
-import Thumbnail from "./Structures/Thumbnail.ts";
+import { Channel, Video, Playlist, Thumbnail } from "./Structures/exports.ts";
+import { Formatter } from "./formatter.ts";
 
 const SAFE_SEARCH_COOKIE = "PREF=f2=8000000";
 
 export interface SearchOptions {
     limit?: number;
-    type?: "video" | "channel" | "playlist" | "all";
+    type?: "video" | "channel" | "playlist" | "all" | "film";
     requestOptions?: RequestInit;
     safeSearch?: boolean;
 }
@@ -34,39 +32,58 @@ class YouTube {
      * @param {string} query Search youtube
      * @param {object} options Search options
      * @param {number} [options.limit=20] Limit
-     * @param {"video"|"channel"|"playlist"|"all"} options.type Type
+     * @param {"video"|"channel"|"playlist"|"all"|"film"} options.type Type
      * @param {RequestInit} [options.requestOptions] Request options
      * @param {boolean} [options.safeSearch] Safe search filter
      */
     static async search(query: string, options?: SearchOptions & { type: "video" }): Promise<Video[]>;
+    static async search(query: string, options?: SearchOptions & { type: "film" }): Promise<Video[]>;
     static async search(query: string, options?: SearchOptions & { type: "channel" }): Promise<Channel[]>;
     static async search(query: string, options?: SearchOptions & { type: "playlist" }): Promise<Playlist[]>;
     static async search(query: string, options?: SearchOptions & { type: "all" }): Promise<(Video | Channel | Playlist)[]>;
     static async search(query: string, options?: SearchOptions): Promise<(Video | Channel | Playlist)[]> {
-        if (!options) options = { limit: 20, type: "video", requestOptions: {} };
+        if (!options) options = { limit: 100, type: "video", requestOptions: {} };
         if (!query || typeof query !== "string") throw new Error(`Invalid search query "${query}"!`);
         options.type = options.type || "video";
 
-        const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
-
-        const url = `https://youtube.com/results?q=${encodeURIComponent(query.trim()).replace(/%20/g, "+")}&hl=en${filter}`;
         const requestOptions = options.safeSearch ? { ...options.requestOptions, headers: { cookie: SAFE_SEARCH_COOKIE } } : {};
 
-        const html = await Util.getHTML(url, requestOptions);
-        return Util.parseSearchResult(html, options);
+        try {
+            const filter = options.type === "all" ? null : Util.filter(options.type);
+            const res = await Util.makeRequest("/search", {
+                data: {
+                    params: filter,
+                    query
+                },
+                clientCtx: {
+                    originalUrl: `https://youtube.com/results?search_query=${encodeURIComponent(query.trim()).replace(/%20/g, "+")}${filter}`
+                },
+                requestOptions
+            });
+            return Formatter.formatSearchResult(res.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents, options);
+        } catch {
+            // fallback
+            const filter = options.type === "all" ? "" : `&sp=${Util.filter(options.type)}`;
+
+            const url = `https://youtube.com/results?search_query=${encodeURIComponent(query.trim()).replace(/%20/g, "+")}&hl=en${filter}`;
+
+            const html = await Util.getHTML(url, requestOptions);
+            return Util.parseSearchResult(html, options);
+        }
     }
 
     /**
      * Search one
      * @param {string} query Search query
-     * @param {"video"|"channel"|"playlist"|"all"} type Search type
+     * @param {"video"|"channel"|"playlist"|"all"|"film"} type Search type
      * @param {boolean} safeSearch Safe search filter
      * @param {RequestInit} requestOptions Request options
      */
     static searchOne(query: string, type?: "video", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video>;
+    static searchOne(query: string, type?: "film", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video>;
     static searchOne(query: string, type?: "channel", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Channel>;
     static searchOne(query: string, type?: "playlist", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Playlist>;
-    static searchOne(query: string, type?: "video" | "channel" | "playlist" | "all", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video | Channel | Playlist> {
+    static searchOne(query: string, type?: "video" | "channel" | "film" | "playlist" | "all", safeSearch?: boolean, requestOptions?: RequestInit): Promise<Video | Channel | Playlist> {
         if (!type) type = "video";
         return new Promise((resolve) => {
             // @ts-ignore
@@ -125,9 +142,7 @@ class YouTube {
      * Attempts to parse `INNERTUBE_API_KEY`
      */
     static async fetchInnerTubeKey() {
-        const html = await Util.getHTML("https://www.youtube.com?hl=en");
-        const key = html.split('INNERTUBE_API_KEY":"')[1]?.split('"')[0] ?? html.split('innertubeApiKey":"')[1]?.split('"')[0];
-        return key ?? null;
+        return Util.fetchInnerTubeKey();
     }
 
     static async trending(): Promise<Video[]> {
@@ -183,15 +198,22 @@ class YouTube {
     static async getSuggestions(query: string) {
         if (!query) throw new Error("Search query was not provided!");
 
-        const res = await Util.getHTML(`https://clients1.google.com/complete/search?client=youtube&gs_ri=youtube&ds=yt&q=${encodeURIComponent(query)}`);
-        const searchSuggestions: string[] = [];
-        res.split("[").forEach((ele, index) => {
-            if (!ele.split('"')[1] || index === 1) return;
-            return searchSuggestions.push(ele.split('"')[1]);
-        });
+        try {
+            const res = await Util.getHTML(`https://suggestqueries-clients6.youtube.com/complete/search?client=youtube&gs_ri=youtube&ds=yt&q=${encodeURIComponent(query)}`);
+            const partition = res.split("window.google.ac.h(")[1];
+            const data = Util.json(partition.slice(0, partition.length - 1)) as any[][];
+            return data[1].map((m) => m[0]);
+        } catch {
+            const res = await Util.getHTML(`https://clients1.google.com/complete/search?client=youtube&gs_ri=youtube&ds=yt&q=${encodeURIComponent(query)}`);
+            const searchSuggestions: string[] = [];
+            res.split("[").forEach((ele, index) => {
+                if (!ele.split('"')[1] || index === 1) return;
+                return searchSuggestions.push(ele.split('"')[1]);
+            });
 
-        searchSuggestions.pop();
-        return searchSuggestions;
+            searchSuggestions.pop();
+            return searchSuggestions;
+        }
     }
 
     /**
@@ -237,6 +259,6 @@ class YouTube {
     }
 }
 
-export { Util, Thumbnail, Channel, Playlist, Video, YouTube };
+export { Util, Thumbnail, Channel, Playlist, Video, YouTube, Formatter };
 
 export default YouTube;

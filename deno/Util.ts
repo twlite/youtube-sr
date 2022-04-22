@@ -1,7 +1,6 @@
 // @ts-nocheck
-import Channel from "./Structures/Channel.ts";
-import Playlist from "./Structures/Playlist.ts";
-import Video from "./Structures/Video.ts";
+import { Formatter } from "./formatter.ts";
+import { Channel, Video, Playlist } from "./Structures/exports.ts";
 
 const PLAYLIST_REGEX = /^https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})$/;
 const PLAYLIST_ID = /(PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;
@@ -10,9 +9,10 @@ const VIDEO_URL = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))
 const VIDEO_ID = /^[a-zA-Z0-9-_]{11}$/;
 const fetch = getFetch();
 const DEFAULT_INNERTUBE_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
+let innertubeCache: string = null;
 
 export interface ParseSearchInterface {
-    type?: "video" | "playlist" | "channel" | "all";
+    type?: "video" | "playlist" | "channel" | "all" | "film";
     limit?: number;
     requestOptions?: RequestInit;
 }
@@ -38,6 +38,11 @@ function getFetch(): typeof window.fetch {
 class Util {
     private constructor() {
         throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
+    }
+
+    static async innertubeKey(): Promise<string> {
+        if (innertubeCache) return innertubeCache;
+        return await Util.fetchInnerTubeKey();
     }
 
     static get VideoRegex(): RegExp {
@@ -66,6 +71,13 @@ class Util {
      */
     static get PlaylistIDRegex(): RegExp {
         return PLAYLIST_ID;
+    }
+
+    static async fetchInnerTubeKey() {
+        const html = await Util.getHTML("https://www.youtube.com?hl=en");
+        const key = html.split('INNERTUBE_API_KEY":"')[1]?.split('"')[0] ?? html.split('innertubeApiKey":"')[1]?.split('"')[0];
+        if (key) innertubeCache = key;
+        return key ?? DEFAULT_INNERTUBE_KEY;
     }
 
     /**
@@ -133,7 +145,6 @@ class Util {
         if (!options) options = { type: "video", limit: 0 };
         if (!options.type) options.type = "video";
 
-        const results = [];
         let details = [];
         let fetched = false;
 
@@ -165,35 +176,7 @@ class Util {
 
         if (!fetched) return [];
 
-        for (let i = 0; i < details.length; i++) {
-            if (typeof options.limit === "number" && options.limit > 0 && results.length >= options.limit) break;
-            let data = details[i];
-            let res;
-            if (options.type === "all") {
-                if (!!data.videoRenderer) options.type = "video";
-                else if (!!data.channelRenderer) options.type = "channel";
-                else if (!!data.playlistRenderer) options.type = "playlist";
-                else continue;
-            }
-
-            if (options.type === "video") {
-                const parsed = Util.parseVideo(data);
-                if (!parsed) continue;
-                res = parsed;
-            } else if (options.type === "channel") {
-                const parsed = Util.parseChannel(data);
-                if (!parsed) continue;
-                res = parsed;
-            } else if (options.type === "playlist") {
-                const parsed = Util.parsePlaylist(data);
-                if (!parsed) continue;
-                res = parsed;
-            }
-
-            results.push(res);
-        }
-
-        return results;
+        return Formatter.formatSearchResult(details, options);
     }
 
     /**
@@ -202,14 +185,14 @@ class Util {
      */
     static parseChannel(data?: any): Channel {
         if (!data || !data.channelRenderer) return;
-        const badge = data.channelRenderer.ownerBadges && data.channelRenderer.ownerBadges[0];
+        const badges = data.channelRenderer.ownerBadges as any[];
         let url = `https://www.youtube.com${data.channelRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl || data.channelRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url}`;
         let res = new Channel({
             id: data.channelRenderer.channelId,
             name: data.channelRenderer.title.simpleText,
             icon: data.channelRenderer.thumbnail.thumbnails[data.channelRenderer.thumbnail.thumbnails.length - 1],
             url: url,
-            verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified")),
+            verified: !badges?.length ? false : badges.some((badge) => badge["verifiedBadge"] || badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified")),
             subscribers: data.channelRenderer.subscriberCountText.simpleText
         });
 
@@ -242,9 +225,9 @@ class Util {
                 name: data.videoRenderer.ownerText.runs[0].text || null,
                 url: `https://www.youtube.com${data.videoRenderer.ownerText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl || data.videoRenderer.ownerText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
                 icon: {
-                    url: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].url,
-                    width: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].width,
-                    height: data.videoRenderer.channelThumbnailSupportedRenderers.channelThumbnailWithLinkRenderer.thumbnail.thumbnails[0].height
+                    url: data.videoRenderer.channelThumbnail?.thumbnails?.[0]?.url || data.videoRenderer.channelThumbnailSupportedRenderers?.channelThumbnailWithLinkRenderer?.thumbnail?.thumbnails?.[0]?.url,
+                    width: data.videoRenderer.channelThumbnail?.thumbnails?.[0]?.width || data.videoRenderer.channelThumbnailSupportedRenderers?.channelThumbnailWithLinkRenderer?.thumbnail?.thumbnails?.[0]?.width,
+                    height: data.videoRenderer.channelThumbnail?.thumbnails?.[0]?.height || data.videoRenderer.channelThumbnailSupportedRenderers?.channelThumbnailWithLinkRenderer?.thumbnail?.thumbnails?.[0]?.height
                 },
                 verified: Boolean(badge?.metadataBadgeRenderer?.style?.toLowerCase().includes("verified"))
             },
@@ -271,7 +254,7 @@ class Util {
                 channel: {
                     id: data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId,
                     name: data.playlistRenderer.shortBylineText.runs[0].text,
-                    url: `https://www.youtube.com${data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`
+                    url: `https://www.youtube.com${data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.browseEndpoint?.canonicalBaseUrl || data.playlistRenderer.shortBylineText.runs[0].navigationEndpoint.commandMetadata?.webCommandMetadata?.url}`
                 },
                 videos: parseInt(data.playlistRenderer.videoCount.replace(/[^0-9]/g, ""))
             },
@@ -530,6 +513,8 @@ class Util {
                 return "EgIQAQ%253D%253D";
             case "channel":
                 return "EgIQAg%253D%253D";
+            case "film":
+                return "EgIQBA%253D%253D";
             default:
                 throw new TypeError(`Invalid filter type "${ftype}"!`);
         }
@@ -562,6 +547,35 @@ class Util {
         } catch {
             return null;
         }
+    }
+
+    static async makeRequest(url = "", data: any = { data: {}, requestOptions: {} }) {
+        const key = await Util.innertubeKey();
+        const res = await Util.getHTML(`https://youtube.com/youtubei/v1${url}?key=${key}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Host: "www.youtube.com",
+                Referer: "https://www.youtube.com"
+            },
+            body: JSON.stringify({
+                context: {
+                    client: {
+                        utcOffsetMinutes: 0,
+                        gl: "US",
+                        hl: "en",
+                        clientName: "WEB",
+                        clientVersion: "1.20220406.00.00",
+                        originalUrl: "https://www.youtube.com/",
+                        ...(data.clientCtx || {})
+                    },
+                    ...(data.ctx || {})
+                },
+                ...(data.data || {})
+            }),
+            ...(data.requestOptions || {})
+        });
+        return Util.json(res);
     }
 }
 

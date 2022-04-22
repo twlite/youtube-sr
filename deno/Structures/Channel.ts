@@ -33,6 +33,8 @@ class Channel {
         this.url = data.url || null;
         this.icon = data.icon || { url: null, width: 0, height: 0 };
         this.subscribers = data.subscribers || null;
+
+        if (this.icon.url?.startsWith("//")) this.icon.url = `https:${this.icon.url}`;
     }
 
     /**
