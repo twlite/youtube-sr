@@ -71,7 +71,7 @@ YouTube.search("the weeknd save your tears")
 Similar to search but makes single search.
 
 ```js
-YouTube.search("the weeknd save your tears")
+YouTube.searchOne("the weeknd save your tears")
     .then(console.log) // Response
     .catch(console.error);
 ```
