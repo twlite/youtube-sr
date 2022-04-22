@@ -23,7 +23,7 @@ getChalk().then(() => {
 function importFormat(txt) {
     return txt.split(" ").map(m => {
         return ["import", "from", "as", "type", "assert"].includes(m) ? chalk.cyanBright(m) : ["{", "}"].includes(m) ? chalk.yellowBright(m) : m.startsWith('"') && m.endsWith('"') ? chalk.greenBright(m) : chalk.whiteBright(m);
-        }).join(" ");
+    }).join(" ");
 }
 
 function execute() {
