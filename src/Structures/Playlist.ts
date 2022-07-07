@@ -33,7 +33,7 @@ class Playlist {
         this.url = data.url || null;
         this.link = data.link || null;
         this.channel = data.author || null;
-        this.thumbnail = data.thumbnail || null;
+        this.thumbnail = new Thumbnail(data.thumbnail || {});
         this.videos = data.videos || [];
         this._continuation.api = data.continuation?.api ?? null;
         this._continuation.token = data.continuation?.token ?? null;
@@ -43,7 +43,7 @@ class Playlist {
     private _patchSearch(data: any) {
         this.id = data.id || null;
         this.title = data.title || null;
-        this.thumbnail = data.thumbnail || null;
+        this.thumbnail = new Thumbnail(data.thumbnail || {});
         this.channel = data.channel || null;
         this.videos = [];
         this.videoCount = data.videos || 0;
@@ -112,7 +112,7 @@ class Playlist {
         return {
             id: this.id,
             title: this.title,
-            thumbnail: this.thumbnail.toJSON(),
+            thumbnail: this.thumbnail?.toJSON() || null,
             channel: {
                 name: this.channel.name,
                 id: this.channel.id,

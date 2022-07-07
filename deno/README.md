@@ -14,14 +14,11 @@ Simple package to make YouTube search.
 - ✅ Get Playlist (including all videos)
 - ✅ YouTube safe search
 - ✅ YouTube Trending (~50 items)
-- ❌ Get specific channel
-- ❌ Get full search result
-- ❌ YouTube search filters
-- ❌ Downloading videos
 
 # Installation
 ## Node
 
+> `youtube-sr` also works with **[Bun](https://bun.sh)** runtime with zero configuration.
 > You may have to install `fetch` api in node. `youtube-sr` supports **[undici](https://npmjs.com/package/undici)** and **[node-fetch](https://npmjs.com/package/node-fetch)**.
 
 ```sh
@@ -71,7 +68,7 @@ YouTube.search("the weeknd save your tears")
 Similar to search but makes single search.
 
 ```js
-YouTube.search("the weeknd save your tears")
+YouTube.searchOne("the weeknd save your tears")
     .then(console.log) // Response
     .catch(console.error);
 ```
