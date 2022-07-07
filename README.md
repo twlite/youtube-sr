@@ -19,6 +19,7 @@ Simple package to make YouTube search.
 ## Node
 
 > `youtube-sr` also works with **[Bun](https://bun.sh)** runtime with zero configuration.
+
 > You may have to install `fetch` api in node. `youtube-sr` supports **[undici](https://npmjs.com/package/undici)** and **[node-fetch](https://npmjs.com/package/node-fetch)**.
 
 ```sh
