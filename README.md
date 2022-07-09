@@ -263,4 +263,4 @@ Used to validate url/id.
 - Preview **[https://simple-youtube-clone.vercel.app](https://simple-youtube-clone.vercel.app)**
 
 # Help and Support
-Join my discord server **[https://discord.gg/YnUMMCDvSJ](https://discord.gg/YnUMMCDvSJ)**
+Join my discord server **[https://discord.gg/CR8JxrxSwr](https://discord.gg/CR8JxrxSwr)**
