@@ -15,15 +15,20 @@ Simple package to make YouTube search.
 - ✅ YouTube safe search
 - ✅ YouTube Trending (~50 items)
 
+## Using youtube-sr in Bun
+
+> `youtube-sr` works well with **[Bun](https://bun.sh)** runtime with zero configuration.
+
+## Dependencies
+> `youtube-sr` depends upon the `fetch` API. It by default picks the `fetch` api from window or global object. You may have to install `fetch` api in nodejs. `youtube-sr` supports **[undici](https://npm.im/undici)**, **[node-fetch](https://npm.im/node-fetch)**, **[cross-fetch](https://npm.im/cross-fetch)** & **[@vercel/fetch](https://npm.im/@vercel/fetch)**. You don't have to add anything to the code. `youtube-sr` tries to resolve these libs itself.
+
+
 # Installation
-## Node
-
-> `youtube-sr` also works with **[Bun](https://bun.sh)** runtime with zero configuration.
-
-> You may have to install `fetch` api in node. `youtube-sr` supports **[undici](https://npmjs.com/package/undici)** and **[node-fetch](https://npmjs.com/package/node-fetch)**.
 
 ```sh
-$ npm i --save youtube-sr
+$ npm i --save youtube-sr # via npm
+$ yarn add youtube-sr # yarn
+$ pnpm add youtube-sr # pnpm
 ```
 
 ```js
@@ -42,15 +47,20 @@ import YouTube from "https://deno.land/x/youtube_sr/mod.ts";
 ## Search
 
 ```js
-YouTube.search("indila last dance", { limit: 3 })
-    .then(x => console.log(x))
-    .catch(console.error);
+const videos = await YouTube.search("playing with fire", { limit: 3 });
+console.log(videos.map((m, i) => `[${++i}] ${m.title} (${m.url})`).join("\n"));
+
+/*
+[1] BLACKPINK - '불장난 (PLAYING WITH FIRE)' M/V (https://www.youtube.com/watch?v=9pdj4iJD08s)
+[2] BLACKPINK - ‘불장난(PLAYING WITH FIRE)’ DANCE PRACTICE VIDEO (https://www.youtube.com/watch?v=NvWfJTbrTBY)
+[3] BLACKPINK - PLAYING WITH FIRE (불장난) [Color Coded Han|Rom|Eng] (https://www.youtube.com/watch?v=PT0mv-4IL4M)
+*/
 ```
 
 ## Safe Search
 
 ```js
-YouTube.search("indila last dance", { limit: 3, safeSearch: true })
+YouTube.search("some nsfw query", { limit: 3, safeSearch: true })
     .then(x => console.log(x))
     .catch(console.error);
 ```
@@ -61,7 +71,7 @@ Used to search videos/channels/playlists. This works like a general YouTube sear
 
 ```js
 YouTube.search("the weeknd save your tears")
-    .then(console.log) // Response[]
+    .then(vids => console.log(vids.map(m => m.url))) // ["https://www.youtube.com/watch?v=XXXXXXX", ...]
     .catch(console.error);
 ```
 
@@ -70,7 +80,7 @@ Similar to search but makes single search.
 
 ```js
 YouTube.searchOne("the weeknd save your tears")
-    .then(console.log) // Response
+    .then(res => console.log(res.url)) // https://www.youtube.com/watch?v=XXXXXXX
     .catch(console.error);
 ```
 

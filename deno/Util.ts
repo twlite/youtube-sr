@@ -1,4 +1,28 @@
 // @ts-nocheck
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020-present DevAndromeda
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import { Formatter } from "./formatter.ts";
 import { Channel, Video, Playlist } from "./Structures/exports.ts";
 
@@ -7,9 +31,11 @@ const PLAYLIST_ID = /(PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;
 const ALBUM_REGEX = /(RDC|O)LAK5uy_[a-zA-Z0-9-_]{33}/;
 const VIDEO_URL = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
 const VIDEO_ID = /^[a-zA-Z0-9-_]{11}$/;
-const fetch = getFetch();
 const DEFAULT_INNERTUBE_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
 let innertubeCache: string = null;
+let __fetch: typeof globalThis.fetch;
+const isNode = typeof process !== "undefined" && "node" in (process.versions || {});
+const FETCH_LIBS = ["undici", "node-fetch", "cross-fetch", "@vercel/fetch"];
 
 export interface ParseSearchInterface {
     type?: "video" | "playlist" | "channel" | "all" | "film";
@@ -17,22 +43,25 @@ export interface ParseSearchInterface {
     requestOptions?: RequestInit;
 }
 
-function getFetch(): typeof window.fetch {
-    // browser/deno
+async function getFetch(): Promise<typeof globalThis.fetch> {
+    // return if fetch is already resolved
+    if (typeof __fetch === "function") return __fetch;
+    // try to locate fetch in window
     if (typeof window !== "undefined" && "fetch" in window) return window.fetch;
+    // try to locate fetch in globalThis
+    if ("fetch" in globalThis) return globalThis.fetch;
 
-    // for whatever reason
-    if (typeof globalThis.fetch === "function") return globalThis.fetch;
-
-    for (const fetchLib of ["undici", "node-fetch"]) {
+    // try to resolve fetch by importing fetch libs
+    for (const fetchLib of FETCH_LIBS) {
         try {
-            const pkg = require(fetchLib);
+            const pkg = await import(fetchLib);
             const mod = pkg.fetch || pkg.default || pkg;
-            if (mod) return mod;
+            if (mod) return (__fetch = mod);
         } catch {}
     }
 
-    throw new Error(`Could not find fetch library. Install "node-fetch"/"undici" or define "fetch" in global scope!`);
+    if (isNode) throw new Error(`Could not resolve fetch library. Install one of ${FETCH_LIBS.map((m) => `"${m}"`).join(", ")} or define "fetch" in global scope!`);
+    throw new Error("Could not resolve fetch in global scope");
 }
 
 class Util {
@@ -101,8 +130,10 @@ class Util {
             requestOptions || {}
         );
 
-        return new Promise((resolve, reject) => {
-            fetch(url, requestOptions)
+        return new Promise(async (resolve, reject) => {
+            // lazy load fetch
+            if (!__fetch) __fetch = await getFetch();
+            __fetch(url, requestOptions)
                 .then((res: Response) => {
                     if (!res.ok) throw new Error(`Rejected with status code: ${res.status}`);
                     return res.text();

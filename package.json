@@ -13,7 +13,6 @@
   },
   "scripts": {
     "build": "npm run build:node && npm run build:deno",
-    "postbuild": "node scripts/postbuild.js",
     "build:node": "tsup",
     "build:deno": "node scripts/deno.js",
     "format": "prettier --write **/*.{js,ts}"
