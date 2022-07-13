@@ -47,15 +47,20 @@ import YouTube from "https://deno.land/x/youtube_sr/mod.ts";
 ## Search
 
 ```js
-YouTube.search("indila last dance", { limit: 3 })
-    .then(x => console.log(x))
-    .catch(console.error);
+const videos = await YouTube.search("playing with fire", { limit: 3 });
+console.log(videos.map((m, i) => `[${++i}] ${m.title} (${m.url})`).join("\n"));
+
+/*
+[1] BLACKPINK - '불장난 (PLAYING WITH FIRE)' M/V (https://www.youtube.com/watch?v=9pdj4iJD08s)
+[2] BLACKPINK - ‘불장난(PLAYING WITH FIRE)’ DANCE PRACTICE VIDEO (https://www.youtube.com/watch?v=NvWfJTbrTBY)
+[3] BLACKPINK - PLAYING WITH FIRE (불장난) [Color Coded Han|Rom|Eng] (https://www.youtube.com/watch?v=PT0mv-4IL4M)
+*/
 ```
 
 ## Safe Search
 
 ```js
-YouTube.search("indila last dance", { limit: 3, safeSearch: true })
+YouTube.search("some nsfw query", { limit: 3, safeSearch: true })
     .then(x => console.log(x))
     .catch(console.error);
 ```
