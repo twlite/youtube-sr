@@ -141,7 +141,7 @@ class Playlist {
             channel: {
                 name: this.channel.name,
                 id: this.channel.id,
-                icon: this.channel?.iconURL ? this.channel.iconURL(): null
+                icon: this.channel?.iconURL?.()
             },
             url: this.url,
             videos: this.videos
