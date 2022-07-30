@@ -23,7 +23,7 @@
  */
 
 import Util from "./Util";
-import { Channel, Video, Playlist, Thumbnail } from "./Structures/exports";
+import { Channel, Video, Playlist, Thumbnail, ChannelIconInterface, VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Structures/exports";
 import { Formatter } from "./formatter";
 
 const SAFE_SEARCH_COOKIE = "PREF=f2=8000000";
@@ -277,6 +277,19 @@ class YouTube {
     }
 }
 
-export { Util, Thumbnail, Channel, Playlist, Video, YouTube, Formatter };
+export {
+    Util,
+    Thumbnail,
+    Channel,
+    Playlist,
+    Video,
+    YouTube,
+    Formatter,
+    ChannelIconInterface,
+    SAFE_SEARCH_COOKIE,
+    VideoStreamingData,
+    VideoStreamingFormat,
+    VideoStreamingFormatAdaptive
+};
 
 export default YouTube;

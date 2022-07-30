@@ -22,9 +22,18 @@
  * SOFTWARE.
  */
 
-import Channel from "./Channel";
+import Channel, { ChannelIconInterface } from "./Channel";
 import Playlist from "./Playlist";
-import Video from "./Video";
+import Video, { VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Video";
 import Thumbnail from "./Thumbnail";
 
-export { Channel, Video, Playlist, Thumbnail };
+export {
+    Channel,
+    ChannelIconInterface,
+    Video,
+    Playlist,
+    Thumbnail,
+    VideoStreamingData,
+    VideoStreamingFormat,
+    VideoStreamingFormatAdaptive
+};

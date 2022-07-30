@@ -24,7 +24,7 @@
  */
 
 import Util from "./Util.ts";
-import { Channel, Video, Playlist, Thumbnail } from "./Structures/exports.ts";
+import { Channel, Video, Playlist, Thumbnail, ChannelIconInterface, VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Structures/exports.ts";
 import { Formatter } from "./formatter.ts";
 
 const SAFE_SEARCH_COOKIE = "PREF=f2=8000000";
@@ -278,6 +278,19 @@ class YouTube {
     }
 }
 
-export { Util, Thumbnail, Channel, Playlist, Video, YouTube, Formatter };
+export {
+    Util,
+    Thumbnail,
+    Channel,
+    Playlist,
+    Video,
+    YouTube,
+    Formatter,
+    ChannelIconInterface,
+    SAFE_SEARCH_COOKIE,
+    VideoStreamingData,
+    VideoStreamingFormat,
+    VideoStreamingFormatAdaptive
+};
 
 export default YouTube;

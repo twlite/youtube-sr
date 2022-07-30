@@ -26,6 +26,44 @@
 import Channel from "./Channel.ts";
 import Thumbnail from "./Thumbnail.ts";
 
+export interface VideoStreamingData {
+    expiresInSeconds: string;
+    formats: VideoStreamingFormat[];
+    adaptiveFormats: VideoStreamingFormatAdaptive[];
+}
+
+export interface VideoStreamingFormat {
+    itag: number;
+    mimeType: string;
+    bitrate: number;
+    width: number;
+    height: number;
+    lastModified: string;
+    contentLength: string;
+    quality: string;
+    fps: number;
+    qualityLabel: string;
+    projectionType: string;
+    averageBitrate: number;
+    audioQuality: string;
+    approxDurationMs: string;
+    audioSampleRate: string;
+    audioChannels: number;
+    signatureCipher: string;
+}
+
+export interface VideoStreamingFormatAdaptive extends VideoStreamingFormat {
+    initRange?: { start: string; end: string };
+    indexRange?: { start: string; end: string };
+    colorInfo?: {
+        primaries: string;
+        transferCharacteristics?: string;
+        matrixCoefficients?: string;
+    };
+    highReplication?: boolean;
+    loudnessDb?: number;
+}
+
 class Video {
     id?: string;
     title?: string;
@@ -42,6 +80,7 @@ class Video {
     live: boolean;
     private: boolean;
     tags: string[];
+    streamingData?: VideoStreamingData | null;
 
     constructor(data: any) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
@@ -71,8 +110,21 @@ class Video {
         this.live = !!data.live;
         this.private = !!data.private;
         this.tags = data.tags || [];
-
+        Object.defineProperty(this, "streamingData", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: data.streamingData || null
+        });
         this.videos = data.videos || [];
+    }
+
+    get formats() {
+        return this.streamingData?.formats || [];
+    }
+
+    get adaptiveFormats() {
+        return this.streamingData?.adaptiveFormats || [];
     }
 
     get url() {

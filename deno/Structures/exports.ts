@@ -23,9 +23,18 @@
  * SOFTWARE.
  */
 
-import Channel from "./Channel.ts";
+import Channel, { ChannelIconInterface } from "./Channel.ts";
 import Playlist from "./Playlist.ts";
-import Video from "./Video.ts";
+import Video, { VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Video.ts";
 import Thumbnail from "./Thumbnail.ts";
 
-export { Channel, Video, Playlist, Thumbnail };
+export {
+    Channel,
+    ChannelIconInterface,
+    Video,
+    Playlist,
+    Thumbnail,
+    VideoStreamingData,
+    VideoStreamingFormat,
+    VideoStreamingFormatAdaptive
+};

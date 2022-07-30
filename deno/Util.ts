@@ -407,10 +407,12 @@ class Util {
         let info;
 
         try {
-            info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";</script>")[0]).videoDetails;
+            info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";</script>")[0]);
         } catch {
-            info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";var meta")[0]).videoDetails;
+            info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";var meta")[0]);
         }
+
+        if (!info?.videoDetails) return null;
 
         info = {
             ...raw.primary,
@@ -419,32 +421,33 @@ class Util {
         };
 
         const payload = new Video({
-            id: info.info.videoId,
-            title: info.info.title,
-            views: parseInt(info.info.viewCount) || 0,
-            tags: info.info.keywords,
-            private: info.info.isPrivate,
-            live: info.info.isLiveContent,
-            duration: parseInt(info.info.lengthSeconds) * 1000,
-            duration_raw: Util.durationString(Util.parseMS(parseInt(info.info.lengthSeconds) * 1000 || 0)),
+            id: info.info.videoDetails.videoId,
+            title: info.info.videoDetails.title,
+            views: parseInt(info.info.videoDetails.viewCount) || 0,
+            tags: info.info.videoDetails.keywords,
+            private: info.info.videoDetails.isPrivate,
+            live: info.info.videoDetails.isLiveContent,
+            duration: parseInt(info.info.videoDetails.lengthSeconds) * 1000,
+            duration_raw: Util.durationString(Util.parseMS(parseInt(info.info.videoDetails.lengthSeconds) * 1000 || 0)),
             channel: {
-                name: info.info.author,
-                id: info.info.channelId,
+                name: info.info.videoDetails.author,
+                id: info.info.videoDetails.channelId,
                 url: `https://www.youtube.com${info.owner.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
                 icon: info.owner.videoOwnerRenderer.thumbnail.thumbnails[0],
                 subscribers: info.owner.videoOwnerRenderer.subscriberCountText?.simpleText?.replace(" subscribers", "")
             },
-            description: info.info.shortDescription,
+            description: info.info.videoDetails.shortDescription,
             thumbnail: {
-                ...info.info.thumbnail.thumbnails[info.info.thumbnail.thumbnails.length - 1],
-                id: info.info.videoId
+                ...info.info.videoDetails.thumbnail.thumbnails[info.info.videoDetails.thumbnail.thumbnails.length - 1],
+                id: info.info.videoDetails.videoId
             },
             uploadedAt: info.dateText.simpleText,
             ratings: {
                 likes: this.getInfoLikesCount(info) || 0,
                 dislikes: 0
             },
-            videos: Util.getNext(nextData ?? {}) || []
+            videos: Util.getNext(nextData ?? {}) || [],
+            streamingData: info.info.streamingData || null
         });
 
         return payload;
