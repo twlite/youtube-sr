@@ -20,7 +20,7 @@ Simple package to make YouTube search.
 > `youtube-sr` works well with **[Bun](https://bun.sh)** runtime with zero configuration.
 
 ## Dependencies
-> `youtube-sr` depends upon the `fetch` API. It by default picks the `fetch` api from window or global object. You may have to install `fetch` api in nodejs. `youtube-sr` supports **[undici](https://npm.im/undici)**, **[node-fetch](https://npm.im/node-fetch)**, **[cross-fetch](https://npm.im/cross-fetch)** & **[@vercel/fetch](https://npm.im/@vercel/fetch)**. You don't have to add anything to the code. `youtube-sr` tries to resolve these libs itself.
+> `youtube-sr` depends upon the `fetch` API. It by default picks the `fetch` api from window or global object. You may have to install `fetch` api in nodejs. `youtube-sr` supports **[undici](https://npm.im/undici)**, **[node-fetch](https://npm.im/node-fetch)** & **[cross-fetch](https://npm.im/cross-fetch)**. You don't have to add anything to the code. `youtube-sr` tries to resolve these libs itself.
 
 
 # Installation
