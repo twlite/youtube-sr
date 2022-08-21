@@ -79,6 +79,8 @@ class Video {
     live: boolean;
     private: boolean;
     tags: string[];
+    nsfw = false;
+    unlisted = false;
     streamingData?: VideoStreamingData | null;
 
     constructor(data: any) {
@@ -109,13 +111,20 @@ class Video {
         this.live = !!data.live;
         this.private = !!data.private;
         this.tags = data.tags || [];
+        this.nsfw = Boolean(data.nsfw);
+        this.unlisted = Boolean(data.unlisted);
         Object.defineProperty(this, "streamingData", {
             enumerable: false,
             configurable: true,
             writable: true,
             value: data.streamingData || null
         });
-        this.videos = data.videos || [];
+        Object.defineProperty(this, "videos", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: data.videos || []
+        });
     }
 
     get formats() {
@@ -167,7 +176,7 @@ class Video {
     }
 
     toJSON() {
-        return {
+        const res = {
             id: this.id,
             url: this.url,
             title: this.title,
@@ -175,6 +184,8 @@ class Video {
             duration: this.duration,
             duration_formatted: this.durationFormatted,
             uploadedAt: this.uploadedAt,
+            unlisted: this.unlisted,
+            nsfw: this.nsfw,
             thumbnail: this.thumbnail.toJSON(),
             channel: {
                 name: this.channel.name,
@@ -191,6 +202,8 @@ class Video {
             live: this.live,
             private: this.private
         };
+
+        return res;
     }
 }
 

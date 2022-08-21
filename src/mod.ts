@@ -277,19 +277,6 @@ class YouTube {
     }
 }
 
-export {
-    Util,
-    Thumbnail,
-    Channel,
-    Playlist,
-    Video,
-    YouTube,
-    Formatter,
-    ChannelIconInterface,
-    SAFE_SEARCH_COOKIE,
-    VideoStreamingData,
-    VideoStreamingFormat,
-    VideoStreamingFormatAdaptive
-};
+export { Util, Thumbnail, Channel, Playlist, Video, YouTube, Formatter, ChannelIconInterface, SAFE_SEARCH_COOKIE, VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive };
 
 export default YouTube;

@@ -34,7 +34,7 @@ const DEFAULT_INNERTUBE_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
 let innertubeCache: string = null;
 let __fetch: typeof globalThis.fetch;
 const isNode = typeof process !== "undefined" && "node" in (process.versions || {});
-const FETCH_LIBS = ["undici", "node-fetch", "cross-fetch", "@vercel/fetch"];
+const FETCH_LIBS = ["undici", "node-fetch", "cross-fetch"];
 
 export interface ParseSearchInterface {
     type?: "video" | "playlist" | "channel" | "all" | "film";
@@ -399,8 +399,8 @@ class Util {
         }
 
         const raw = {
-            primary: data.find((section: any) => "videoPrimaryInfoRenderer" in section)?.videoPrimaryInfoRenderer,
-            secondary: data.find((section: any) => "videoSecondaryInfoRenderer" in section)?.videoSecondaryInfoRenderer
+            primary: data?.find((section: any) => "videoPrimaryInfoRenderer" in section)?.videoPrimaryInfoRenderer || {},
+            secondary: data?.find((section: any) => "videoSecondaryInfoRenderer" in section)?.videoSecondaryInfoRenderer || {}
         };
 
         let info;
@@ -408,7 +408,7 @@ class Util {
         try {
             info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";</script>")[0]);
         } catch {
-            info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";var meta")[0]);
+            info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";var")[0]);
         }
 
         if (!info?.videoDetails) return null;
@@ -425,6 +425,8 @@ class Util {
             views: parseInt(info.info.videoDetails.viewCount) || 0,
             tags: info.info.videoDetails.keywords,
             private: info.info.videoDetails.isPrivate,
+            unlisted: !!info.info.microformat?.playerMicroformatRenderer?.isUnlisted,
+            nsfw: info.info.microformat?.playerMicroformatRenderer?.isFamilySafe === false,
             live: info.info.videoDetails.isLiveContent,
             duration: parseInt(info.info.videoDetails.lengthSeconds) * 1000,
             duration_raw: Util.durationString(Util.parseMS(parseInt(info.info.videoDetails.lengthSeconds) * 1000 || 0)),
