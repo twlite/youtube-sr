@@ -387,6 +387,7 @@ class Util {
     static getVideo(html: string) {
         let data,
             nextData = {};
+
         try {
             const parsed = JSON.parse(html.split("var ytInitialData = ")[1].split(";</script>")[0]);
             data = parsed.contents.twoColumnWatchNextResults.results.results.contents;
@@ -403,7 +404,7 @@ class Util {
             secondary: data?.find((section: any) => "videoSecondaryInfoRenderer" in section)?.videoSecondaryInfoRenderer || {}
         };
 
-        let info;
+        let info: any;
 
         try {
             info = JSON.parse(html.split("var ytInitialPlayerResponse = ")[1].split(";</script>")[0]);
@@ -429,6 +430,7 @@ class Util {
             nsfw: info.info.microformat?.playerMicroformatRenderer?.isFamilySafe === false,
             live: info.info.videoDetails.isLiveContent,
             duration: parseInt(info.info.videoDetails.lengthSeconds) * 1000,
+            shorts: [`{"webCommandMetadata":{"url":"/shorts/${info.info.videoDetails.videoId}"`, `{window['ytPageType'] = "shorts";`, `"/hashtag/shorts"`].some((r) => html.includes(r)),
             duration_raw: Util.durationString(Util.parseMS(parseInt(info.info.videoDetails.lengthSeconds) * 1000 || 0)),
             channel: {
                 name: info.info.videoDetails.author,

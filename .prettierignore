@@ -1,6 +1,7 @@
 .vscode/
 benchmark/
 build/
+dist/
 deno/
 dev/
 scripts/

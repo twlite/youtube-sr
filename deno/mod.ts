@@ -24,7 +24,17 @@
  */
 
 import Util from "./Util.ts";
-import { Channel, Video, Playlist, Thumbnail, ChannelIconInterface, VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Structures/exports.ts";
+// prettier-ignore
+import {
+    Channel,
+    Video,
+    Playlist,
+    Thumbnail,
+    ChannelIconInterface,
+    VideoStreamingData,
+    VideoStreamingFormat,
+    VideoStreamingFormatAdaptive
+} from "./Structures/exports";
 import { Formatter } from "./formatter.ts";
 
 const SAFE_SEARCH_COOKIE = "PREF=f2=8000000";
@@ -36,11 +46,21 @@ export interface SearchOptions {
     safeSearch?: boolean;
 }
 
+export interface TrendingParseOptions {
+    type?: keyof typeof TrendingFilter | "ALL";
+}
+
 export interface PlaylistOptions {
     limit?: number;
     requestOptions?: RequestInit;
     fetchAll?: boolean;
 }
+
+export const TrendingFilter = {
+    MUSIC: "4gINGgt5dG1hX2NoYXJ0cw%3D%3D",
+    GAMING: "4gIcGhpnYW1pbmdfY29ycHVzX21vc3RfcG9wdWxhcg%3D%3D",
+    MOVIES: "4gIKGgh0cmFpbGVycw%3D%3D"
+};
 
 class YouTube {
     constructor() {
@@ -170,18 +190,20 @@ class YouTube {
         return Util.fetchInnerTubeKey();
     }
 
-    static async trending(): Promise<Video[]> {
-        const html = await Util.getHTML("https://www.youtube.com/feed/explore?hl=en");
+    static async trending(options?: TrendingParseOptions): Promise<Video[]> {
+        const type = TrendingFilter[options?.type as keyof typeof TrendingFilter];
+
+        const html = await Util.getHTML(`https://www.youtube.com/feed/trending?${type ? "bp=" + type + "&hl=en" : "hl=en"}`);
         let json;
 
         try {
             json = JSON.parse(html.split("var ytInitialData =")[1].split(";</script>")[0]);
         } catch {
-            return null;
+            return [];
         }
 
         const content = json.contents?.twoColumnBrowseResultsRenderer?.tabs[0].tabRenderer?.content?.sectionListRenderer?.contents[1]?.itemSectionRenderer?.contents[0]?.shelfRenderer?.content?.expandedShelfContentsRenderer?.items;
-        if (!content || !Array.isArray(content)) return null;
+        if (!content || !Array.isArray(content)) return [];
 
         const res: Video[] = [];
 
@@ -194,6 +216,7 @@ class YouTube {
                     description: item.descriptionSnippet?.runs[0]?.text,
                     duration: Util.parseDuration(item.lengthText.simpleText) / 1000 || 0,
                     duration_raw: item.lengthText.simpleText,
+                    shorts: item.thumbnailOverlays?.some((res: any) => res.thumbnailOverlayTimeStatusRenderer?.style === "SHORTS"),
                     thumbnail: {
                         id: item.videoId,
                         url: item.thumbnail.thumbnails[item.thumbnail.thumbnails.length - 1].url,
@@ -284,6 +307,20 @@ class YouTube {
     }
 }
 
-export { Util, Thumbnail, Channel, Playlist, Video, YouTube, Formatter, ChannelIconInterface, SAFE_SEARCH_COOKIE, VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive };
+// prettier-ignore
+export {
+    Util,
+    Thumbnail,
+    Channel,
+    Playlist,
+    Video,
+    YouTube,
+    Formatter,
+    ChannelIconInterface,
+    SAFE_SEARCH_COOKIE,
+    VideoStreamingData,
+    VideoStreamingFormat,
+    VideoStreamingFormatAdaptive
+};
 
 export default YouTube;

@@ -80,6 +80,7 @@ class Video {
     private: boolean;
     tags: string[];
     nsfw = false;
+    shorts = false;
     unlisted = false;
     streamingData?: VideoStreamingData | null;
 
@@ -113,6 +114,7 @@ class Video {
         this.tags = data.tags || [];
         this.nsfw = Boolean(data.nsfw);
         this.unlisted = Boolean(data.unlisted);
+        this.shorts = Boolean(data.shorts);
         Object.defineProperty(this, "streamingData", {
             enumerable: false,
             configurable: true,
@@ -138,6 +140,11 @@ class Video {
     get url() {
         if (!this.id) return null;
         return `https://www.youtube.com/watch?v=${this.id}`;
+    }
+
+    get shortsURL() {
+        if (!this.shorts) return this.url;
+        return `https://www.youtube.com/shorts/${this.id}`;
     }
 
     /**
@@ -179,6 +186,7 @@ class Video {
         const res = {
             id: this.id,
             url: this.url,
+            shorts_url: this.shortsURL,
             title: this.title,
             description: this.description,
             duration: this.duration,
@@ -199,6 +207,7 @@ class Video {
                 likes: this.likes,
                 dislikes: this.dislikes
             },
+            shorts: this.shorts,
             live: this.live,
             private: this.private
         };

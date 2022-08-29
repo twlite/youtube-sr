@@ -27,4 +27,14 @@ import Playlist from "./Playlist";
 import Video, { VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Video";
 import Thumbnail from "./Thumbnail";
 
-export { Channel, ChannelIconInterface, Video, Playlist, Thumbnail, VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive };
+// prettier-ignore
+export {
+    Channel,
+    ChannelIconInterface,
+    Video,
+    Playlist,
+    Thumbnail,
+    VideoStreamingData,
+    VideoStreamingFormat,
+    VideoStreamingFormatAdaptive
+};
