@@ -100,7 +100,7 @@ YouTube.getPlaylist("some_youtube_playlist")
 **Fetch all videos immediately**
 ```js
 YouTube.getPlaylist("some_youtube_playlist", { fetchAll: true })
-  .then(console.log) // max 100 items
+  .then(console.log)
   .catch(console.error);
 ```
 
@@ -124,6 +124,7 @@ YouTube.getPlaylist("some_youtube_playlist")
 Returns basic video info by its url.
 
 > Note: Data returned by `getVideo` is different from the `search`.
+> `shorts` property of the video object might not be 100% accurate.
 
 ```js
 YouTube.getVideo("Some_Video_URL")
@@ -191,6 +192,7 @@ Used to validate url/id.
     duration: 215000,
     uploadedAt: '7 years ago',
     views: 714624838,
+    shorts: false,
     thumbnail: Thumbnail {
       id: 'K5KAc5CoCuk',
       width: 720,
@@ -219,6 +221,7 @@ Used to validate url/id.
     duration: 213000,
     uploadedAt: '6 years ago',
     views: 2004026,
+    shorts: false,
     thumbnail: Thumbnail {
       id: '1ox1GvNiwtc',
       width: 720,
@@ -247,6 +250,7 @@ Used to validate url/id.
     duration: 212000,
     uploadedAt: '11 months ago',
     views: 1843719,
+    shorts: false,
     thumbnail: Thumbnail {
       id: 'UN4VLmo1QG4',
       width: 720,

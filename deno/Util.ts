@@ -35,7 +35,7 @@ const DEFAULT_INNERTUBE_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
 let innertubeCache: string = null;
 let __fetch: typeof globalThis.fetch;
 const isNode = typeof process !== "undefined" && "node" in (process.versions || {});
-const FETCH_LIBS = ["undici", "node-fetch", "cross-fetch"];
+const FETCH_LIBS = ["node-fetch", "cross-fetch", "undici"];
 
 export interface ParseSearchInterface {
     type?: "video" | "playlist" | "channel" | "all" | "film";
@@ -236,6 +236,7 @@ class Util {
      */
     static parseVideo(data?: any): Video {
         if (!data || !data.videoRenderer) return;
+        import("fs").then(r => r.writeFileSync("./data.json", JSON.stringify(data.videoRenderer)))
 
         const badge = data.videoRenderer.ownerBadges && data.videoRenderer.ownerBadges[0];
         let res = new Video({
@@ -245,6 +246,7 @@ class Util {
             description: data.videoRenderer.descriptionSnippet && data.videoRenderer.descriptionSnippet.runs[0] ? data.videoRenderer.descriptionSnippet.runs[0].text : "",
             duration: data.videoRenderer.lengthText ? Util.parseDuration(data.videoRenderer.lengthText.simpleText) : 0,
             duration_raw: data.videoRenderer.lengthText ? data.videoRenderer.lengthText.simpleText : null,
+            shorts: data.videoRenderer.thumbnailOverlays?.some((res: any) => res.thumbnailOverlayTimeStatusRenderer?.style === "SHORTS"),
             thumbnail: {
                 id: data.videoRenderer.videoId,
                 url: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].url,
