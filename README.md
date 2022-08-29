@@ -87,7 +87,8 @@ YouTube.searchOne("the weeknd save your tears")
 ## getPlaylist(query, options?)
 Returns playlist info.
 > Note: Data returned by `getPlaylist` is different from the playlist data obtained by `search`.
-> **Using `limit` in `options` wont fetch all videos. They are for current chunk only!
+> **Using `limit` in `options` wont fetch all videos. They are for current chunk only! Use `fetchAll: true` in order to fetch all videos.**
+> `limit` with `fetchAll` will limit the videos for whole playlist. However, `limit` may not be always accurate.
 
 **Basic**
 ```js
@@ -96,7 +97,14 @@ YouTube.getPlaylist("some_youtube_playlist")
   .catch(console.error);
 ```
 
-**Getting all videos from a playlist at once**
+**Fetch all videos immediately**
+```js
+YouTube.getPlaylist("some_youtube_playlist", { fetchAll: true })
+  .then(console.log) // max 100 items
+  .catch(console.error);
+```
+
+**Getting all videos from a playlist at once manually**
 ```js
 YouTube.getPlaylist("some_youtube_playlist")
   .then(playlist => playlist.fetch()) // if your playlist has 500 videos, this makes additional 4 requests to get rest of the 400 videos. (100 videos = 1 request)

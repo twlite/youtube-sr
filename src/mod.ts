@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-present DevAndromeda
+ * Copyright (c) 2020 DevAndromeda
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,11 +38,12 @@ export interface SearchOptions {
 export interface PlaylistOptions {
     limit?: number;
     requestOptions?: RequestInit;
+    fetchAll?: boolean;
 }
 
 class YouTube {
-    private constructor() {
-        throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
+    constructor() {
+        return YouTube;
     }
 
     /**
@@ -124,13 +125,18 @@ class YouTube {
      * @param {RequestInit} [options.requestOptions] Request Options
      */
     static async getPlaylist(url: string, options?: PlaylistOptions): Promise<Playlist> {
-        if (!options) options = { limit: 100, requestOptions: {} };
+        if (!options) options = { limit: 100, requestOptions: {}, fetchAll: false };
         if (!url || typeof url !== "string") throw new Error(`Expected playlist url, received ${typeof url}!`);
         Util.validatePlaylist(url);
         url = Util.getPlaylistURL(url);
 
         const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
-        return Util.getPlaylist(html, options && options.limit);
+        const res = Util.getPlaylist(html, options && options.limit);
+
+        if (res && res instanceof Playlist && options.fetchAll) {
+            return await res.fetch(options && options.limit).catch(() => res);
+        }
+        return res;
     }
 
     /**

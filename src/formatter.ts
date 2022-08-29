@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-present DevAndromeda
+ * Copyright (c) 2020 DevAndromeda
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,10 @@
 import { Playlist, Video, Channel } from "./Structures/exports";
 import Util from "./Util";
 
-export class Formatter extends null {
-    private constructor() {}
+export class Formatter {
+    constructor() {
+        return Formatter;
+    }
 
     public static formatSearchResult(
         details: any[],

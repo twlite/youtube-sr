@@ -2,7 +2,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-present DevAndromeda
+ * Copyright (c) 2020 DevAndromeda
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,13 +28,4 @@ import Playlist from "./Playlist.ts";
 import Video, { VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Video.ts";
 import Thumbnail from "./Thumbnail.ts";
 
-export {
-    Channel,
-    ChannelIconInterface,
-    Video,
-    Playlist,
-    Thumbnail,
-    VideoStreamingData,
-    VideoStreamingFormat,
-    VideoStreamingFormatAdaptive
-};
+export { Channel, ChannelIconInterface, Video, Playlist, Thumbnail, VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive };

@@ -2,7 +2,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-present DevAndromeda
+ * Copyright (c) 2020 DevAndromeda
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,7 +57,7 @@ async function getFetch(): Promise<typeof globalThis.fetch> {
             const pkg = await import(fetchLib);
             const mod = pkg.fetch || pkg.default || pkg;
             if (mod) return (__fetch = mod);
-        } catch {}
+        } catch { }
     }
 
     if (isNode) throw new Error(`Could not resolve fetch library. Install one of ${FETCH_LIBS.map((m) => `"${m}"`).join(", ")} or define "fetch" in global scope!`);
@@ -65,8 +65,8 @@ async function getFetch(): Promise<typeof globalThis.fetch> {
 }
 
 class Util {
-    private constructor() {
-        throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
+    constructor() {
+        return Util;
     }
 
     static async innertubeKey(): Promise<string> {
@@ -368,13 +368,13 @@ class Util {
             link: `https://www.youtube.com${data.title.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
             author: author
                 ? {
-                      name: author.videoOwnerRenderer.title.runs[0].text,
-                      id: author.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.browseId,
-                      url: `https://www.youtube.com${author.videoOwnerRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url || author.videoOwnerRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
-                      icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails[author.videoOwnerRenderer.thumbnail.thumbnails.length - 1].url : null
-                  }
+                    name: author.videoOwnerRenderer.title.runs[0].text,
+                    id: author.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.browseId,
+                    url: `https://www.youtube.com${author.videoOwnerRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url || author.videoOwnerRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
+                    icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails.pop()?.url : null
+                }
                 : {},
-            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails[data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length - 1].url : null
+            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.pop() : null
         });
 
         return res;
@@ -394,7 +394,7 @@ class Util {
 
             try {
                 nextData = parsed.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results;
-            } catch {}
+            } catch { }
         } catch {
             throw new Error("Could not parse video metadata!");
         }

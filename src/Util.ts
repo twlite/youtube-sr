@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-present DevAndromeda
+ * Copyright (c) 2020 DevAndromeda
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -64,8 +64,8 @@ async function getFetch(): Promise<typeof globalThis.fetch> {
 }
 
 class Util {
-    private constructor() {
-        throw new Error(`The ${this.constructor.name} class may not be instantiated!`);
+    constructor() {
+        return Util;
     }
 
     static async innertubeKey(): Promise<string> {
@@ -370,10 +370,10 @@ class Util {
                       name: author.videoOwnerRenderer.title.runs[0].text,
                       id: author.videoOwnerRenderer.title.runs[0].navigationEndpoint.browseEndpoint.browseId,
                       url: `https://www.youtube.com${author.videoOwnerRenderer.navigationEndpoint.commandMetadata.webCommandMetadata.url || author.videoOwnerRenderer.navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
-                      icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails[author.videoOwnerRenderer.thumbnail.thumbnails.length - 1].url : null
+                      icon: author.videoOwnerRenderer.thumbnail.thumbnails.length ? author.videoOwnerRenderer.thumbnail.thumbnails.pop()?.url : null
                   }
                 : {},
-            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails[data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.length - 1].url : null
+            thumbnail: data.thumbnailRenderer.playlistVideoThumbnailRenderer?.thumbnail.thumbnails.length ? data.thumbnailRenderer.playlistVideoThumbnailRenderer.thumbnail.thumbnails.pop() : null
         });
 
         return res;
