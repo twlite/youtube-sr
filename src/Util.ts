@@ -34,7 +34,7 @@ const DEFAULT_INNERTUBE_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
 let innertubeCache: string = null;
 let __fetch: typeof globalThis.fetch;
 const isNode = typeof process !== "undefined" && "node" in (process.versions || {});
-const FETCH_LIBS = ["undici", "node-fetch", "cross-fetch"];
+const FETCH_LIBS = ["node-fetch", "cross-fetch", "undici"];
 
 export interface ParseSearchInterface {
     type?: "video" | "playlist" | "channel" | "all" | "film";
