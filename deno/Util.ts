@@ -236,7 +236,6 @@ class Util {
      */
     static parseVideo(data?: any): Video {
         if (!data || !data.videoRenderer) return;
-        import("fs").then(r => r.writeFileSync("./data.json", JSON.stringify(data.videoRenderer)))
 
         const badge = data.videoRenderer.ownerBadges && data.videoRenderer.ownerBadges[0];
         let res = new Video({
