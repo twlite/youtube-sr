@@ -245,7 +245,6 @@ class Util {
             description: data.videoRenderer.descriptionSnippet && data.videoRenderer.descriptionSnippet.runs[0] ? data.videoRenderer.descriptionSnippet.runs[0].text : "",
             duration: data.videoRenderer.lengthText ? Util.parseDuration(data.videoRenderer.lengthText.simpleText) : 0,
             duration_raw: data.videoRenderer.lengthText ? data.videoRenderer.lengthText.simpleText : null,
-            shorts: data.videoRenderer.thumbnailOverlays?.some((res: any) => res.thumbnailOverlayTimeStatusRenderer?.style === "SHORTS"),
             thumbnail: {
                 id: data.videoRenderer.videoId,
                 url: data.videoRenderer.thumbnail.thumbnails[data.videoRenderer.thumbnail.thumbnails.length - 1].url,

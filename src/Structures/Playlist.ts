@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-import Thumbnail from "./Thumbnail";
-import Video from "./Video";
-import Channel from "./Channel";
+import { Thumbnail } from "./Thumbnail";
+import { Video } from "./Video";
+import { Channel } from "./Channel";
 import Util from "../Util";
 const BASE_API = "https://www.youtube.com/youtubei/v1/browse?key=";
 
-class Playlist {
+export class Playlist {
     id?: string;
     title?: string;
     videoCount: number;
@@ -147,5 +147,3 @@ class Playlist {
         };
     }
 }
-
-export default Playlist;

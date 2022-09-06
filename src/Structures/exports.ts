@@ -22,19 +22,7 @@
  * SOFTWARE.
  */
 
-import Channel, { ChannelIconInterface } from "./Channel";
-import Playlist from "./Playlist";
-import Video, { VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Video";
-import Thumbnail from "./Thumbnail";
-
-// prettier-ignore
-export {
-    Channel,
-    ChannelIconInterface,
-    Video,
-    Playlist,
-    Thumbnail,
-    VideoStreamingData,
-    VideoStreamingFormat,
-    VideoStreamingFormatAdaptive
-};
+export * from "./Channel";
+export * from "./Playlist";
+export * from "./Video";
+export * from "./Thumbnail";

@@ -23,17 +23,7 @@
  */
 
 import Util from "./Util";
-// prettier-ignore
-import {
-    Channel,
-    Video,
-    Playlist,
-    Thumbnail,
-    ChannelIconInterface,
-    VideoStreamingData,
-    VideoStreamingFormat,
-    VideoStreamingFormatAdaptive
-} from "./Structures/exports";
+import { Channel, Video, Playlist } from "./Structures/exports";
 import { Formatter } from "./formatter";
 
 const SAFE_SEARCH_COOKIE = "PREF=f2=8000000";
@@ -306,20 +296,8 @@ class YouTube {
     }
 }
 
-// prettier-ignore
-export {
-    Util,
-    Thumbnail,
-    Channel,
-    Playlist,
-    Video,
-    YouTube,
-    Formatter,
-    ChannelIconInterface,
-    SAFE_SEARCH_COOKIE,
-    VideoStreamingData,
-    VideoStreamingFormat,
-    VideoStreamingFormatAdaptive
-};
+export { Util, YouTube, Formatter, SAFE_SEARCH_COOKIE };
+
+export * from "./Structures/exports";
 
 export default YouTube;

@@ -29,7 +29,7 @@ export interface ChannelIconInterface {
     height: number;
 }
 
-class Channel {
+export class Channel {
     name?: string;
     verified: boolean;
     id?: string;
@@ -93,5 +93,3 @@ class Channel {
         };
     }
 }
-
-export default Channel;

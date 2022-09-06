@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import Channel from "./Channel";
-import Thumbnail from "./Thumbnail";
+import { Channel } from "./Channel";
+import { Thumbnail } from "./Thumbnail";
 
 export interface VideoStreamingData {
     expiresInSeconds: string;
@@ -63,7 +63,7 @@ export interface VideoStreamingFormatAdaptive extends VideoStreamingFormat {
     loudnessDb?: number;
 }
 
-class Video {
+export class Video {
     id?: string;
     title?: string;
     description?: string;
@@ -215,5 +215,3 @@ class Video {
         return res;
     }
 }
-
-export default Video;

@@ -23,19 +23,7 @@
  * SOFTWARE.
  */
 
-import Channel, { ChannelIconInterface } from "./Channel.ts";
-import Playlist from "./Playlist.ts";
-import Video, { VideoStreamingData, VideoStreamingFormat, VideoStreamingFormatAdaptive } from "./Video.ts";
-import Thumbnail from "./Thumbnail.ts";
-
-// prettier-ignore
-export {
-    Channel,
-    ChannelIconInterface,
-    Video,
-    Playlist,
-    Thumbnail,
-    VideoStreamingData,
-    VideoStreamingFormat,
-    VideoStreamingFormatAdaptive
-};
+export * from "./Channel.ts";
+export * from "./Playlist.ts";
+export * from "./Video.ts";
+export * from "./Thumbnail.ts";

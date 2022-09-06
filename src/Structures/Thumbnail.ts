@@ -23,7 +23,7 @@
  */
 
 type ThumbnailType = "default" | "hqdefault" | "mqdefault" | "sddefault" | "maxresdefault" | "ultrares";
-class Thumbnail {
+export class Thumbnail {
     id?: string;
     width: number;
     height: number;
@@ -87,5 +87,3 @@ class Thumbnail {
         };
     }
 }
-
-export default Thumbnail;
