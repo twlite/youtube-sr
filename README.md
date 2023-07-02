@@ -281,8 +281,8 @@ Used to validate url/id.
 - **[ytdl-core](https://npmjs.com/package/ytdl-core)** YouTube Download
 
 # Testing website
-- Source **[https://github.com/DevAndromeda/simple-youtube-clone](https://github.com/DevAndromeda/simple-youtube-clone)**
-- Preview **[https://simple-youtube-clone.vercel.app](https://simple-youtube-clone.vercel.app)**
+- Source **https://github.com/skdhg/youtube-clone**
+- Preview **https://notube.vercel.app**
 
 # Help and Support
 Join my discord server **[https://discord.gg/CR8JxrxSwr](https://discord.gg/CR8JxrxSwr)**
