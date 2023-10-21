@@ -1,6 +1,6 @@
 {
   "name": "youtube-sr",
-  "version": "4.3.4",
+  "version": "4.3.5",
   "description": "Simple package to make YouTube search.",
   "files": [
     "dist"
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DevAndromeda/youtube-sr.git"
+    "url": "git+https://github.com/twlite/youtube-sr.git"
   },
   "keywords": [
     "youtube",
@@ -48,12 +48,12 @@
     "buntube",
     "youtube-bun"
   ],
-  "author": "DevAndromeda",
+  "author": "twlite",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/DevAndromeda/youtube-sr/issues"
+    "url": "https://github.com/twlite/youtube-sr/issues"
   },
-  "homepage": "https://github.com/DevAndromeda/youtube-sr#readme",
+  "homepage": "https://github.com/twlite/youtube-sr#readme",
   "devDependencies": {
     "@types/node": "^16.11.12",
     "chalk": "^5.0.1",
@@ -64,6 +64,7 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.0.0",
     "tsup": "^5.11.11",
+    "tsx": "^3.14.0",
     "typescript": "^4.3.2"
   }
 }

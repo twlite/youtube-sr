@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 DevAndromeda
+ * Copyright (c) 2020 twlite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { writeFileSync } from "fs";
 import { Formatter } from "./formatter";
 import { Channel, Video, Playlist } from "./Structures/exports";
 
@@ -512,6 +513,58 @@ class Util {
         return results;
     }
 
+    static getMix(html: string): Playlist {
+        let data = null;
+        writeFileSync("test.html", html);
+
+        try {
+            const parsed = JSON.parse(html.split("var ytInitialData = ")[1].split(";</script>")[0]);
+            data = parsed.contents.twoColumnWatchNextResults.playlist.playlist;
+        } catch {}
+
+        if (!data) return null;
+
+        const videos = data.contents.map((m: any) => {
+            const t = m.playlistPanelVideoRenderer;
+
+            return new Video({
+                id: t.videoId,
+                title: t.title.simpleText,
+                thumbnail: {
+                    id: t.videoId,
+                    url: t.thumbnail.thumbnails[t.thumbnail.thumbnails.length - 1].url,
+                    height: t.thumbnail.thumbnails[t.thumbnail.thumbnails.length - 1].height,
+                    width: t.thumbnail.thumbnails[t.thumbnail.thumbnails.length - 1].width
+                },
+                duration: Util.parseDuration(t.lengthText.simpleText),
+                duration_raw: t.lengthText.simpleText,
+                channel: {
+                    name: t.shortBylineText.runs[0].text,
+                    id: t.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.browseId,
+                    url: `https://www.youtube.com${t.shortBylineText.runs[0].navigationEndpoint.browseEndpoint.canonicalBaseUrl}`,
+                    icon: null
+                }
+            });
+        });
+        const list = new Playlist(
+            {
+                id: data.playlistId,
+                title: data.title,
+                videoCount: data.contents.length,
+                videos,
+                link: data.playlistShareUrl,
+                url: data.playlistShareUrl,
+                thumbnail: videos[0]?.thumbnail?.toJSON() || null,
+                channel: {
+                    name: data.ownerName.simpleText
+                }
+            },
+            true
+        );
+
+        return list;
+    }
+
     static parseHomepage(html: string): Video[] {
         let contents: any;
 
@@ -528,13 +581,14 @@ class Util {
         return Util.getNext(contents, true);
     }
 
-    static getPlaylistURL(url: string): string {
+    static getPlaylistURL(url: string): { url: string; mix: boolean } | null {
         if (typeof url !== "string") return null;
         const group = PLAYLIST_ID.exec(url) || ALBUM_REGEX.exec(url);
         if (!group) return null;
-        if (group[0].startsWith("RD") && !ALBUM_REGEX.exec(group[0])) throw new Error("Mixes are not supported!");
+        // mix
+        if (group[0].startsWith("RD") && !ALBUM_REGEX.exec(group[0])) return { url, mix: true };
         const finalURL = `https://www.youtube.com/playlist?list=${group[0]}`;
-        return finalURL;
+        return { url: finalURL, mix: false };
     }
 
     static validatePlaylist(url: string): void {
