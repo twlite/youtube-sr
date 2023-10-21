@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 DevAndromeda
+ * Copyright (c) 2020 twlite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@ export class Playlist {
     channel?: Channel;
     thumbnail?: Thumbnail;
     videos: Video[];
+    mix?: boolean;
     private _continuation: { api?: string; token?: string; clientVersion?: string } = {};
 
     constructor(data = {}, searchResult = false) {
@@ -62,6 +63,7 @@ export class Playlist {
         this._continuation.api = data.continuation?.api ?? null;
         this._continuation.token = data.continuation?.token ?? null;
         this._continuation.clientVersion = data.continuation?.clientVersion ?? "<important data>";
+        this.mix = data.mix || false;
     }
 
     private _patchSearch(data: any) {
@@ -69,10 +71,10 @@ export class Playlist {
         this.title = data.title || null;
         this.thumbnail = new Thumbnail(data.thumbnail || {});
         this.channel = data.channel || null;
-        this.videos = [];
-        this.videoCount = data.videos || 0;
+        this.videos = data.videos || [];
+        this.videoCount = data.videos?.length || 0;
         this.url = this.id ? `https://www.youtube.com/playlist?list=${this.id}` : null;
-        this.link = null;
+        this.link = data.link || null;
         this.lastUpdate = null;
         this.views = 0;
     }

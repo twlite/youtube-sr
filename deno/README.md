@@ -1,27 +1,31 @@
 # YouTube Search
+
 Simple package to make YouTube search.
 
 # Features
-- Easy
-- Simple
-- Fast
-- Lightweight
+
+-   Easy
+-   Simple
+-   Fast
+-   Lightweight
 
 # Supported
-- ✅ Regular YouTube Search (Video/Channel/Playlist) (~25 items)
-- ✅ Get specific video
-- ✅ Get homepage contents
-- ✅ Get Playlist (including all videos)
-- ✅ YouTube safe search
-- ✅ YouTube Trending (~50 items)
+
+-   ✅ Regular YouTube Search (Video/Channel/Playlist) (~25 items)
+-   ✅ Get specific video
+-   ✅ Get homepage contents
+-   ✅ Get Playlist (including all videos)
+-   ✅ Get Mixes
+-   ✅ YouTube safe search
+-   ✅ YouTube Trending (~50 items)
 
 ## Using youtube-sr in Bun
 
 > `youtube-sr` works well with **[Bun](https://bun.sh)** runtime with zero configuration.
 
 ## Dependencies
-> `youtube-sr` depends upon the `fetch` API. It by default picks the `fetch` api from window or global object. You may have to install `fetch` api in nodejs. `youtube-sr` supports **[undici](https://npm.im/undici)**, **[node-fetch](https://npm.im/node-fetch)** & **[cross-fetch](https://npm.im/cross-fetch)**. You don't have to add anything to the code. `youtube-sr` tries to resolve these libs itself.
 
+> `youtube-sr` depends upon the `fetch` API. It by default picks the `fetch` api from window or global object. You may have to install `fetch` api in nodejs. `youtube-sr` supports **[undici](https://npm.im/undici)**, **[node-fetch](https://npm.im/node-fetch)** & **[cross-fetch](https://npm.im/cross-fetch)**. You don't have to add anything to the code. `youtube-sr` tries to resolve these libs itself.
 
 # Installation
 
@@ -35,15 +39,18 @@ $ pnpm add youtube-sr # pnpm
 const YouTube = require("youtube-sr").default;
 ```
 
--------------------------------------------------------------------------------------------------
+---
+
 ## Deno
 
 ```js
 import YouTube from "https://deno.land/x/youtube_sr/mod.ts";
 ```
--------------------------------------------------------------------------------------------------
+
+---
 
 # Example
+
 ## Search
 
 ```js
@@ -61,66 +68,73 @@ console.log(videos.map((m, i) => `[${++i}] ${m.title} (${m.url})`).join("\n"));
 
 ```js
 YouTube.search("some nsfw query", { limit: 3, safeSearch: true })
-    .then(x => console.log(x))
+    .then((x) => console.log(x))
     .catch(console.error);
 ```
 
 # API
+
 ## search(query, options?)
+
 Used to search videos/channels/playlists. This works like a general YouTube search.
 
 ```js
 YouTube.search("the weeknd save your tears")
-    .then(vids => console.log(vids.map(m => m.url))) // ["https://www.youtube.com/watch?v=XXXXXXX", ...]
+    .then((vids) => console.log(vids.map((m) => m.url))) // ["https://www.youtube.com/watch?v=XXXXXXX", ...]
     .catch(console.error);
 ```
 
 ## searchOne(query, ...options?)
+
 Similar to search but makes single search.
 
 ```js
 YouTube.searchOne("the weeknd save your tears")
-    .then(res => console.log(res.url)) // https://www.youtube.com/watch?v=XXXXXXX
+    .then((res) => console.log(res.url)) // https://www.youtube.com/watch?v=XXXXXXX
     .catch(console.error);
 ```
 
 ## getPlaylist(query, options?)
+
 Returns playlist info.
+
 > Note: Data returned by `getPlaylist` is different from the playlist data obtained by `search`.
-> **Using `limit` in `options` wont fetch all videos. They are for current chunk only! Use `fetchAll: true` in order to fetch all videos.**
-> `limit` with `fetchAll` will limit the videos for whole playlist. However, `limit` may not be always accurate.
+> **Using `limit` in `options` wont fetch all videos. They are for current chunk only! Use `fetchAll: true` in order to fetch all videos.** > `limit` with `fetchAll` will limit the videos for whole playlist. However, `limit` may not be always accurate.
 
 **Basic**
+
 ```js
 YouTube.getPlaylist("some_youtube_playlist")
-  .then(console.log) // max 100 items
-  .catch(console.error);
+    .then(console.log) // max 100 items
+    .catch(console.error);
 ```
 
 **Fetch all videos immediately**
+
 ```js
-YouTube.getPlaylist("some_youtube_playlist", { fetchAll: true })
-  .then(console.log)
-  .catch(console.error);
+YouTube.getPlaylist("some_youtube_playlist", { fetchAll: true }).then(console.log).catch(console.error);
 ```
 
 **Getting all videos from a playlist at once manually**
+
 ```js
 YouTube.getPlaylist("some_youtube_playlist")
-  .then(playlist => playlist.fetch()) // if your playlist has 500 videos, this makes additional 4 requests to get rest of the 400 videos. (100 videos = 1 request)
-  .then(console.log) // all parsable videos
-  .catch(console.error);
+    .then((playlist) => playlist.fetch()) // if your playlist has 500 videos, this makes additional 4 requests to get rest of the 400 videos. (100 videos = 1 request)
+    .then(console.log) // all parsable videos
+    .catch(console.error);
 ```
 
 **Lazily getting videos from a playlist**
+
 ```js
 YouTube.getPlaylist("some_youtube_playlist")
-  .then(playlist => playlist.next()) // fetches next 100 items
-  .then(console.log) // all parsable videos
-  .catch(console.error);
+    .then((playlist) => playlist.next()) // fetches next 100 items
+    .then(console.log) // all parsable videos
+    .catch(console.error);
 ```
 
 ## getVideo(url, options?)
+
 Returns basic video info by its url.
 
 > Note: Data returned by `getVideo` is different from the `search`.
@@ -128,34 +142,36 @@ Returns basic video info by its url.
 
 ```js
 YouTube.getVideo("Some_Video_URL")
-  .then(console.log) // Video info
-  .catch(console.error);
+    .then(console.log) // Video info
+    .catch(console.error);
 ```
 
 ## homepage()
+
 Returns videos from the YouTube homepage.
 
 ```js
 YouTube.homepage()
-  .then(console.log) // videos from youtube homepage
-  .catch(console.error);
+    .then(console.log) // videos from youtube homepage
+    .catch(console.error);
 ```
 
 ## trending()
+
 Returns trending videos from the YouTube.
 
 ```js
 YouTube.trending()
-  .then(console.log) // trending videos from youtube
-  .catch(console.error);
+    .then(console.log) // trending videos from youtube
+    .catch(console.error);
 ```
 
 ## getSuggestions(query)
+
 Returns youtube search suggestions.
 
 ```js
-YouTube.getSuggestions("alan walker")
-  .then(console.log);
+YouTube.getSuggestions("alan walker").then(console.log);
 
 /*
 [
@@ -178,6 +194,7 @@ YouTube.getSuggestions("alan walker")
 ```
 
 ## validate(src, type)
+
 Used to validate url/id.
 
 ## Response Example
@@ -275,14 +292,17 @@ Used to validate url/id.
 ```
 
 # Similar Packages
-- **[youtube-ext](https://npmjs.com/package/youtube-ext)** YouTube Download, YouTube Search
-- **[ytsr](https://npmjs.com/package/ytsr)** YouTube Search
-- **[ytpl](https://npmjs.com/package/ytpl)** YouTube Playlist
-- **[ytdl-core](https://npmjs.com/package/ytdl-core)** YouTube Download
+
+-   **[youtube-ext](https://npmjs.com/package/youtube-ext)** YouTube Download, YouTube Search
+-   **[ytsr](https://npmjs.com/package/ytsr)** YouTube Search
+-   **[ytpl](https://npmjs.com/package/ytpl)** YouTube Playlist
+-   **[ytdl-core](https://npmjs.com/package/ytdl-core)** YouTube Download
 
 # Testing website
-- Source **[https://github.com/DevAndromeda/simple-youtube-clone](https://github.com/DevAndromeda/simple-youtube-clone)**
-- Preview **[https://simple-youtube-clone.vercel.app](https://simple-youtube-clone.vercel.app)**
+
+-   Source **https://github.com/skdhg/youtube-clone**
+-   Preview **https://notube.vercel.app**
 
 # Help and Support
+
 Join my discord server **[https://discord.gg/CR8JxrxSwr](https://discord.gg/CR8JxrxSwr)**

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 DevAndromeda
+ * Copyright (c) 2020 twlite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -138,14 +138,16 @@ class YouTube {
         if (!options) options = { limit: 100, requestOptions: {}, fetchAll: false };
         if (!url || typeof url !== "string") throw new Error(`Expected playlist url, received ${typeof url}!`);
         Util.validatePlaylist(url);
-        url = Util.getPlaylistURL(url);
-
+        const resolved = Util.getPlaylistURL(url);
+        if (!resolved) return null;
+        url = resolved.url;
         const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
-        const res = Util.getPlaylist(html, options && options.limit);
+        const res = resolved.mix ? Util.getMix(html) : Util.getPlaylist(html, options && options.limit);
 
         if (res && res instanceof Playlist && options.fetchAll) {
             return await res.fetch(options && options.limit).catch(() => res);
         }
+
         return res;
     }
 

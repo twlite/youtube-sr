@@ -1,18 +1,17 @@
 {
-	"compilerOptions": {
-		"target": "ES6",
-		"module": "commonjs",
-		"declaration": true,
-		"outDir": "./dist",
-		"strict": true,
-		"strictNullChecks": false,
-		"esModuleInterop": true,
-		"downlevelIteration": true,
-		"removeComments": true,
-		"forceConsistentCasingInFileNames": true
-	},
-	"include": [
-		"src/**/*"
-	],
-	"exclude": ["node_modules", "deno", "dev", "scripts", "test"],
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "declaration": true,
+        "outDir": "./dist",
+        "strict": true,
+        "strictNullChecks": false,
+        "esModuleInterop": true,
+        "downlevelIteration": true,
+        "removeComments": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "deno", "dev", "scripts", "test"]
 }
