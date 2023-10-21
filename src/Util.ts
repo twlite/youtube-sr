@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import { writeFileSync } from "fs";
 import { Formatter } from "./formatter";
 import { Channel, Video, Playlist } from "./Structures/exports";
 
@@ -515,7 +514,6 @@ class Util {
 
     static getMix(html: string): Playlist {
         let data = null;
-        writeFileSync("test.html", html);
 
         try {
             const parsed = JSON.parse(html.split("var ytInitialData = ")[1].split(";</script>")[0]);
