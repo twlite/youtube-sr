@@ -1,6 +1,6 @@
 {
   "name": "youtube-sr",
-  "version": "4.3.6",
+  "version": "4.3.7",
   "description": "Simple package to make YouTube search.",
   "files": [
     "dist"
