@@ -26,7 +26,7 @@ import { Formatter } from "./formatter";
 import { Channel, Video, Playlist } from "./Structures/exports";
 
 const PLAYLIST_REGEX = /^https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})$/;
-const PLAYLIST_ID = /(PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41}/;
+const PLAYLIST_ID = /(PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{11,41}/;
 const ALBUM_REGEX = /(RDC|O)LAK5uy_[a-zA-Z0-9-_]{33}/;
 const VIDEO_URL = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
 const VIDEO_ID = /^[a-zA-Z0-9-_]{11}$/;
