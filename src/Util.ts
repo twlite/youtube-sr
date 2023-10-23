@@ -555,7 +555,8 @@ class Util {
                 thumbnail: videos[0]?.thumbnail?.toJSON() || null,
                 channel: {
                     name: data.ownerName.simpleText
-                }
+                },
+                mix: true
             },
             true
         );

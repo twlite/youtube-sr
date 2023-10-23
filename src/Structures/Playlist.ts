@@ -40,6 +40,7 @@ export class Playlist {
     thumbnail?: Thumbnail;
     videos: Video[];
     mix?: boolean;
+    fake = false;
     private _continuation: { api?: string; token?: string; clientVersion?: string } = {};
 
     constructor(data = {}, searchResult = false) {
@@ -55,8 +56,8 @@ export class Playlist {
         this.videoCount = data.videoCount || 0;
         this.lastUpdate = data.lastUpdate || null;
         this.views = data.views || 0;
-        this.url = data.url || null;
-        this.link = data.link || null;
+        this.url = data.url || data.link || this.id ? `https://www.youtube.com/playlist?list=${this.id}` : null;
+        this.link = data.link || data.url || null;
         this.channel = data.author || null;
         this.thumbnail = new Thumbnail(data.thumbnail || {});
         this.videos = data.videos || [];
@@ -64,6 +65,7 @@ export class Playlist {
         this._continuation.token = data.continuation?.token ?? null;
         this._continuation.clientVersion = data.continuation?.clientVersion ?? "<important data>";
         this.mix = data.mix || false;
+        this.fake = Boolean(data.fake);
     }
 
     private _patchSearch(data: any) {
@@ -73,10 +75,12 @@ export class Playlist {
         this.channel = data.channel || null;
         this.videos = data.videos || [];
         this.videoCount = data.videos?.length || 0;
-        this.url = this.id ? `https://www.youtube.com/playlist?list=${this.id}` : null;
-        this.link = data.link || null;
+        this.url = data.url || data.link || this.id ? `https://www.youtube.com/playlist?list=${this.id}` : null;
+        this.link = data.link || data.url || null;
         this.lastUpdate = null;
         this.views = 0;
+        this.mix = data.mix || false;
+        this.fake = Boolean(data.fake);
     }
 
     /**
@@ -144,6 +148,7 @@ export class Playlist {
                 id: this.channel.id,
                 icon: this.channel?.iconURL?.()
             },
+            mix: this.mix,
             url: this.url,
             videos: this.videos
         };

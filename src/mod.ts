@@ -144,6 +144,40 @@ class YouTube {
         const html = await Util.getHTML(`${url}&hl=en`, options && options.requestOptions);
         const res = resolved.mix ? Util.getMix(html) : Util.getPlaylist(html, options && options.limit);
 
+        // fallback
+        try {
+            if (!res && resolved.mix) {
+                const videoId = new URL(url).searchParams.get("v");
+                if (videoId) {
+                    const vid: Video = await YouTube.getVideo(`https://www.youtube.com/watch?v=${videoId}`).catch(() => null);
+                    if (vid) {
+                        // return fake playlist when mix could not be parsed
+                        return new Playlist(
+                            {
+                                id: vid.id,
+                                title: `Mix - ${vid.title}`,
+                                videoCount: 1,
+                                lastUpdate: null,
+                                views: vid.views,
+                                url: `https://www.youtube.com/watch?v=${vid.id}`,
+                                link: `https://www.youtube.com/watch?v=${vid.id}`,
+                                channel: {
+                                    name: "youtube-sr"
+                                },
+                                thumbnail: vid.thumbnail?.toJSON() || null,
+                                videos: [vid],
+                                mix: true,
+                                fake: true
+                            },
+                            true
+                        );
+                    }
+                }
+            }
+        } catch {
+            //
+        }
+
         if (res && res instanceof Playlist && options.fetchAll) {
             return await res.fetch(options && options.limit).catch(() => res);
         }
