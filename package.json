@@ -1,16 +1,13 @@
 {
   "name": "youtube-sr",
-  "version": "4.3.9",
+  "version": "4.3.10",
   "description": "Simple package to make YouTube search.",
   "files": [
     "dist"
   ],
   "main": "dist/mod.js",
   "types": "dist/mod.d.ts",
-  "exports": {
-    "require": "./dist/mod.js",
-    "import": "./dist/mod.mjs"
-  },
+  "module": "dist/mod.mjs",
   "scripts": {
     "build": "npm run build:node && npm run build:deno",
     "prepublishOnly": "npm run build",
