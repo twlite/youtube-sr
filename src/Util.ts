@@ -23,7 +23,7 @@
  */
 
 import { Formatter } from "./formatter";
-import { Channel, Video, Playlist } from "./Structures/exports";
+import { Channel, Video, Playlist, MusicInfo } from "./Structures/exports";
 
 const PLAYLIST_REGEX = /^https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})$/;
 const PLAYLIST_ID = /(PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{11,41}/;
@@ -420,6 +420,25 @@ class Util {
             info
         };
 
+        // Get music info if there are any
+        let musicInfo: MusicInfo[] | void;
+
+        try {
+            const jsonData = html.split('{"horizontalCardListRenderer":')[1].split(',{"reelShelfRenderer"')[0]
+
+            musicInfo = JSON.parse('{"horizontalCardListRenderer":' + jsonData).horizontalCardListRenderer.cards.map((val: any) => {
+                return {
+                    title: val.videoAttributeViewModel.title,
+                    cover: val.videoAttributeViewModel.image.sources[0].url,
+                    artist: val.videoAttributeViewModel.subtitle,
+                    album: val.videoAttributeViewModel.secondarySubtitle.content,
+                    raw: val.videoAttributeViewModel
+                }
+            })
+        } catch {
+            musicInfo = undefined
+        }
+
         const payload = new Video({
             id: info.info.videoDetails.videoId,
             title: info.info.videoDetails.title,
@@ -450,7 +469,8 @@ class Util {
                 dislikes: 0
             },
             videos: Util.getNext(nextData ?? {}) || [],
-            streamingData: info.info.streamingData || null
+            streamingData: info.info.streamingData || null,
+            music: musicInfo
         });
 
         return payload;
