@@ -10,5 +10,5 @@ export default defineConfig({
     keepNames: true,
     skipNodeModulesBundle: true,
     sourcemap: true,
-    target: "ES6"
+    target: ["es2015"]
 });

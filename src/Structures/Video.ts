@@ -90,7 +90,7 @@ export class Video {
     shorts = false;
     unlisted = false;
     streamingData?: VideoStreamingData | null;
-    music: MusicInfo[]
+    music: MusicInfo[];
 
     constructor(data: any) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
@@ -123,7 +123,7 @@ export class Video {
         this.nsfw = Boolean(data.nsfw);
         this.unlisted = Boolean(data.unlisted);
         this.shorts = Boolean(data.shorts);
-        this.music = data.music
+        this.music = data.music;
         Object.defineProperty(this, "streamingData", {
             enumerable: false,
             configurable: true,

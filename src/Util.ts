@@ -424,7 +424,7 @@ class Util {
         let musicInfo: MusicInfo[] = [];
 
         try {
-            const jsonData = html.split('{"horizontalCardListRenderer":')[1].split(',{"reelShelfRenderer"')[0]
+            const jsonData = html.split('{"horizontalCardListRenderer":')[1].split(',{"reelShelfRenderer"')[0];
 
             musicInfo = JSON.parse('{"horizontalCardListRenderer":' + jsonData).horizontalCardListRenderer.cards.map((val: any) => {
                 return {
@@ -432,10 +432,10 @@ class Util {
                     cover: val.videoAttributeViewModel.image.sources[0].url,
                     artist: val.videoAttributeViewModel.subtitle,
                     album: val.videoAttributeViewModel.secondarySubtitle.content
-                }
-            })
+                };
+            });
         } catch {
-            musicInfo = []
+            musicInfo = [];
         }
 
         const payload = new Video({
