@@ -431,8 +431,7 @@ class Util {
                     title: val.videoAttributeViewModel.title,
                     cover: val.videoAttributeViewModel.image.sources[0].url,
                     artist: val.videoAttributeViewModel.subtitle,
-                    album: val.videoAttributeViewModel.secondarySubtitle.content,
-                    raw: val.videoAttributeViewModel
+                    album: val.videoAttributeViewModel.secondarySubtitle.content
                 }
             })
         } catch {

@@ -68,7 +68,6 @@ export interface MusicInfo {
     cover: string;
     artist: string;
     album: string;
-    raw: any;
 }
 
 export class Video {
