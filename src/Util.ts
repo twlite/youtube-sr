@@ -421,7 +421,7 @@ class Util {
         };
 
         // Get music info if there are any
-        let musicInfo: MusicInfo[] | void;
+        let musicInfo: MusicInfo[] = [];
 
         try {
             const jsonData = html.split('{"horizontalCardListRenderer":')[1].split(',{"reelShelfRenderer"')[0]
