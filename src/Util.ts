@@ -435,7 +435,7 @@ class Util {
                 }
             })
         } catch {
-            musicInfo = undefined
+            musicInfo = []
         }
 
         const payload = new Video({

@@ -90,7 +90,7 @@ export class Video {
     shorts = false;
     unlisted = false;
     streamingData?: VideoStreamingData | null;
-    music: MusicInfo[] | void
+    music: MusicInfo[]
 
     constructor(data: any) {
         if (!data) throw new Error(`Cannot instantiate the ${this.constructor.name} class without data!`);
