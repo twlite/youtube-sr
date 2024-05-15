@@ -94,6 +94,8 @@ YouTube.searchOne("the weeknd save your tears")
     .catch(console.error);
 ```
 
+*Youtube.searchOne and Youtube.search will always return an empty array for the music property*
+
 ## getPlaylist(query, options?)
 
 Returns playlist info.
@@ -228,7 +230,8 @@ Used to validate url/id.
     dislikes: 0,
     live: false,
     private: false,
-    tags: []
+    tags: [],
+    music: []
   },
   Video {
     id: '1ox1GvNiwtc',
@@ -257,7 +260,8 @@ Used to validate url/id.
     dislikes: 0,
     live: false,
     private: false,
-    tags: []
+    tags: [],
+    music: []
   },
   Video {
     id: 'UN4VLmo1QG4',
@@ -286,7 +290,8 @@ Used to validate url/id.
     dislikes: 0,
     live: false,
     private: false,
-    tags: []
+    tags: [],
+    music: []
   }
 ]
 ```
