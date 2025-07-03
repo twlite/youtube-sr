@@ -149,7 +149,7 @@ class YouTube {
             if (!res && resolved.mix) {
                 const videoId = new URL(url).searchParams.get("v");
                 if (videoId) {
-                    const vid: Video = await YouTube.getVideo(`https://www.youtube.com/watch?v=${videoId}`).catch(() => null);
+                    const vid: Video = await YouTube.getVideo(`https://www.youtube.com/watch?v=${videoId}`).catch((): any => null);
                     if (vid) {
                         // return fake playlist when mix could not be parsed
                         return new Playlist(
